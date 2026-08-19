@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>奇藝工坊 - 漢字造字與說文解字平台</title>
+  
+  <!-- Tailwind CSS for utility styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- html2canvas for PNG Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    /* 全頁字體強制設定為標楷體 */
+    * {
+      font-family: "標楷體", "DFKai-SB", "BiauKai", "KaiTi", serif !important;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    /* 網頁主體背景與視窗隱藏溢出，達成整體等比縮放 */
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #2b1d14; /* 沉穩深咖啡色外框 */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 等比縮放主要畫布 (1920 x 1080 基準解析度) */
+    #app-viewport {
+      width: 1920px;
+      height: 1080px;
+      background-color: #f7f3ed; /* 溫潤宣紙咖啡白 */
+      position: absolute;
+      transform-origin: center center;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    /* 咖啡色系客製化滾動條 (僅左側使用) */
+    .custom-scroll::-webkit-scrollbar {
+      width: 8px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #eae0d5;
+      border-radius: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #8c6239;
+      border-radius: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #5c3d24;
+    }
+
+    /* 注音田字格容器 (典藏咖啡色系圖片樣式) */
+    .zhuyin-tianzige-frame {
+      display: flex;
+      border: 4px solid #7f5539;
+      background-color: #fdfbf7;
+      box-shadow: 0 8px 20px rgba(61, 35, 20, 0.15);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* 主田字格區 (正方形) */
+    .tianzige-square {
+      position: relative;
+      background-color: #fdfbf7;
+      border-right: 4px solid #7f5539;
+      overflow: hidden;
+    }
+
+    /* 右側注音直欄區 */
+    .zhuyin-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #f9f4ec;
+      color: #5c3d24;
+      user-select: none;
+      padding: 4px 0;
+    }
+
+    /* 繁體中文注音符號正統直排單組容器 */
+    .zhuyin-syllable {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      margin: 4px 0;
+      line-height: 1;
+    }
+
+    /* 可變形造字物件樣式 */
+    .transform-item {
+      position: absolute;
+      cursor: move;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      line-height: 1;
+      color: #3d2314;
+      font-weight: bold;
+      border: 1px dashed transparent;
+      transition: border-color 0.1s ease;
+    }
+    .transform-item span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      line-height: 1;
+      pointer-events: none;
+      transform-origin: center center;
+      white-space: nowrap;
+    }
+    .transform-item.selected {
+      border-color: #8c52ff;
+      background-color: rgba(140, 82, 255, 0.08);
+    }
+
+    /* 8 個編輯控制點 (4頂點 + 4邊線中點) */
+    .resize-handle {
+      width: 10px;
+      height: 10px;
+      background-color: #8c52ff;
+      border: 1px solid #ffffff;
+      position: absolute;
+      display: none;
+      z-index: 20;
+      border-radius: 2px;
+    }
+    .transform-item.selected .resize-handle {
+      display: block;
+    }
+
+    /* 四個角控制點 */
+    .handle-nw { top: -5px; left: -5px; cursor: nw-resize; }
+    .handle-ne { top: -5px; right: -5px; cursor: ne-resize; }
+    .handle-sw { bottom: -5px; left: -5px; cursor: sw-resize; }
+    .handle-se { bottom: -5px; right: -5px; cursor: se-resize; }
+
+    /* 四條邊中點控制點 */
+    .handle-n { top: -5px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+    .handle-s { bottom: -5px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+    .handle-w { top: 50%; left: -5px; transform: translateY(-50%); cursor: w-resize; }
+    .handle-e { top: 50%; right: -5px; transform: translateY(-50%); cursor: e-resize; }
+
+    /* A4 比例畫布 (210mm x 297mm 比例) */
+    .a4-paper {
+      width: 580px;
+      height: 820px;
+      background-color: #fffdf9;
+      box-shadow: 0 10px 25px rgba(61, 35, 20, 0.15);
+      border: 2px solid #8c6239;
+      position: relative;
+    }
+
+    /* 自訂通知 Toast */
+    #toast {
+      transition: all 0.3s ease;
+      transform: translateY(100px);
+      opacity: 0;
+    }
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app-viewport">
+    
+    <!-- 頂部標題列 (典藏咖啡色系風格) -->
+    <header class="w-full h-20 bg-[#4a3222] text-[#f7f3ed] px-8 flex items-center justify-between border-b-4 border-[#785135]">
+      <div class="flex items-center space-x-4">
+        <i class="fa-solid fa-feather-pointed text-3xl text-[#d4a373]"></i>
+        <h1 class="text-3xl font-bold tracking-wider">奇藝工坊</h1>
+        <span class="text-sm bg-[#68462f] px-3 py-1 rounded-full text-[#e6ccb2] border border-[#a57855]">古典漢字造字與說文解字系統</span>
+      </div>
+      <div class="text-sm text-[#d4a373]">
+        <i class="fa-solid fa-palette mr-2"></i>簡約咖啡色系典藏版
+      </div>
+    </header>
+
+    <!-- 主要內容區：左右分欄 -->
+    <div class="flex-1 flex overflow-hidden">
+      
+      <!-- ================= STREAMING_CHUNK:Rendering Left Scrollable Main Panel ================= -->
+      <main class="w-7/12 h-full overflow-y-auto custom-scroll p-8 space-y-8 bg-[#f5ebe0]">
+        
+        <!-- 壹、造字繪製與結構組合 -->
+        <section class="bg-[#fcf8f2] rounded-xl p-6 border-2 border-[#d7c4b7] shadow-sm">
+          <div class="flex items-center justify-between mb-4 border-b-2 border-[#b08968] pb-3">
+            <h2 class="text-2xl font-bold text-[#4a3222] flex items-center">
+              <span class="w-8 h-8 rounded-full bg-[#8c6239] text-[#f7f3ed] flex items-center justify-center text-base mr-3">壹</span>
+              造字繪製與結構組合
+            </h2>
+            <span class="text-xs text-[#7f5539]">可於預覽格內自由移動與8方位拉伸縮放文字部件</span>
+          </div>
+
+          <!-- 操作面板 -->
+          <div class="grid grid-cols-12 gap-6">
+            <!-- 左側操作與按鈕 -->
+            <div class="col-span-5 flex flex-col justify-between space-y-4">
+              <div>
+                <label class="block text-[#5c3d24] font-bold mb-2 text-lg">輸入造字文字部件：</label>
+                <div class="flex space-x-2">
+                  <input type="text" id="input-char" maxlength="2" placeholder="如：木、日、氵" 
+                    class="w-full px-4 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] text-xl text-center bg-white text-[#3d2314]">
+                  <button id="btn-add-char" class="px-5 py-2 bg-[#8c6239] hover:bg-[#6b4728] text-white rounded-lg font-bold text-lg shadow transition flex items-center justify-center whitespace-nowrap">
+                    <i class="fa-solid fa-plus mr-1"></i> 新增
+                  </button>
+                </div>
+              </div>
+
+              <!-- 工具指引說明 -->
+              <div class="bg-[#f2e9e1] p-3 rounded-lg text-xs text-[#6c4627] space-y-1 border border-[#d7c4b7]">
+                <p class="font-bold text-sm"><i class="fa-solid fa-circle-info mr-1"></i> 操作與注音規範說明：</p>
+                <p>1. 輸入部件後點擊「新增」放入田字格。</p>
+                <p>2. 點擊物件選取後，顯現 <b>8 個編輯點</b>（4 頂點 + 4 邊中點）供精細拉伸縮放與位移。</p>
+                <p>3. 注音呈現符合<b>繁體正統規範</b>：輕聲（˙）置於聲母上方、聲母在上、韻母在下、聲符（ˊ ˇ ˋ）靠右標註。</p>
+              </div>
+
+              <!-- 刪除與確認按鈕群 -->
+              <div class="space-y-2 pt-2">
+                <button id="btn-delete-selected" class="w-full py-2.5 bg-[#b07d62] hover:bg-[#8f5e45] text-white rounded-lg font-bold shadow transition flex items-center justify-center text-base">
+                  <i class="fa-solid fa-trash-can mr-2"></i> 刪除選取物件
+                </button>
+                <button id="btn-confirm-drawing" onclick="confirmDrawing()" class="w-full py-3 bg-[#5c3d24] hover:bg-[#3d2314] text-[#f7f3ed] rounded-lg font-bold shadow-lg transition flex items-center justify-center text-lg">
+                  <i class="fa-solid fa-stamp mr-2 text-[#e6ccb2]"></i> 繪圖確認 (同步至預覽)
+                </button>
+              </div>
+            </div>
+
+            <!-- 右側圖片樣式注音田字格繪圖區 -->
+            <div class="col-span-7 flex flex-col items-center">
+              <div class="text-sm font-bold text-[#6c4627] mb-2">注音田字格樣式 (8角編輯互動區)</div>
+              
+              <!-- 經典注音田字格 -->
+              <div class="zhuyin-tianzige-frame w-[370px] h-[280px]">
+                <!-- 左側：主田字格 (280px x 280px) -->
+                <div id="tianzige-editor" class="tianzige-square w-[280px] h-[280px]">
+                  <!-- 背景中央十字虛線 (SVG) -->
+                  <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#b08968" stroke-width="2" stroke-dasharray="6,6" />
+                    <line x1="50%" y1="0" x2="50%" y2="100%" stroke="#b08968" stroke-width="2" stroke-dasharray="6,6" />
+                  </svg>
+                  <!-- 動態新增的文字部件將放置於此 -->
+                </div>
+
+                <!-- 右側：注音直欄區 (90px x 280px) -->
+                <div id="editor-zhuyin-column" class="zhuyin-column w-[90px] h-[280px]">
+                  <!-- 正統直排注音渲染區 -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 貳、說文解字 -->
+        <section class="bg-[#fcf8f2] rounded-xl p-6 border-2 border-[#d7c4b7] shadow-sm">
+          <div class="flex items-center justify-between mb-4 border-b-2 border-[#b08968] pb-3">
+            <h2 class="text-2xl font-bold text-[#4a3222] flex items-center">
+              <span class="w-8 h-8 rounded-full bg-[#8c6239] text-[#f7f3ed] flex items-center justify-center text-base mr-3">貳</span>
+              說文解字
+            </h2>
+            <span class="text-xs text-[#7f5539]">填寫文字典故與詞性註解</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <!-- 設計師 -->
+            <div>
+              <label class="block text-[#5c3d24] font-bold mb-1">奇藝工坊設計師：</label>
+              <input type="text" id="input-designer" value="造字大師" 
+                class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314]">
+            </div>
+
+            <!-- 注音符號 -->
+            <div>
+              <label class="block text-[#5c3d24] font-bold mb-1">注音符號 (繁體正統注音)：</label>
+              <input type="text" id="input-zhuyin" value="ㄑㄧˊ ㄧˋ" placeholder="如：ㄑㄧˊ ㄧˋ 或 ˙ㄇㄚ"
+                class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314]">
+            </div>
+
+            <!-- 部首 -->
+            <div>
+              <label class="block text-[#5c3d24] font-bold mb-1">部首：</label>
+              <input type="text" id="input-radical" value="乙部" 
+                class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314]">
+            </div>
+
+            <!-- 總筆劃 -->
+            <div>
+              <label class="block text-[#5c3d24] font-bold mb-1">總筆劃：</label>
+              <input type="number" id="input-strokes" value="12" 
+                class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314]">
+            </div>
+
+            <!-- 詞性 (下拉式選單) -->
+            <div class="col-span-2">
+              <label class="block text-[#5c3d24] font-bold mb-1">詞性：</label>
+              <select id="input-pos" class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314] cursor-pointer">
+                <option value="形容詞 / 名詞" selected>形容詞 / 名詞</option>
+                <option value="名詞">名詞</option>
+                <option value="動詞">動詞</option>
+                <option value="形容詞">形容詞</option>
+                <option value="副詞">副詞</option>
+                <option value="代名詞">代名詞</option>
+                <option value="介詞">介詞</option>
+                <option value="連詞">連詞</option>
+                <option value="助詞">助詞</option>
+                <option value="歎詞">歎詞</option>
+              </select>
+            </div>
+
+            <!-- 字義 -->
+            <div class="col-span-2">
+              <label class="block text-[#5c3d24] font-bold mb-1">字義：</label>
+              <textarea id="input-meaning" rows="2" 
+                class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314] resize-none">巧妙特殊的技藝，或指創新創意的獨特漢字結構。</textarea>
+            </div>
+
+            <!-- 語詞與解釋 -->
+            <div class="col-span-2">
+              <label class="block text-[#5c3d24] font-bold mb-1">語詞與解釋：</label>
+              <textarea id="input-phrases" rows="3" 
+                class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314] resize-none">【奇藝】獨特而精妙的技藝與造字藝術。
+【工坊】百工聚會創作之所。</textarea>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- ================= STREAMING_CHUNK:Rendering Right Fixed A4 Preview Panel ================= -->
+      <aside class="w-5/12 h-full bg-[#ded2c3] p-8 flex flex-col items-center justify-between border-l-4 border-[#b08968]">
+        
+        <div class="w-full flex items-center justify-between mb-2">
+          <h2 class="text-2xl font-bold text-[#4a3222] flex items-center">
+            <span class="w-8 h-8 rounded-full bg-[#8c6239] text-[#f7f3ed] flex items-center justify-center text-base mr-3">參</span>
+            參、即時預覽
+          </h2>
+          <span class="text-xs bg-[#c9b5a0] text-[#4a3222] px-2.5 py-1 rounded font-bold">A4 典藏規格</span>
+        </div>
+
+        <!-- 固定 A4 尺寸卡片預覽區 -->
+        <div id="a4-preview-card" class="a4-paper rounded-sm p-8 flex flex-col justify-between border-8 border-[#7f5539]">
+          
+          <!-- A4 頂部頁眉：左上角顯示「奇藝工坊」 -->
+          <div class="border-b-2 border-[#8c6239] pb-3 flex justify-between items-end">
+            <div>
+              <div class="text-xs text-[#a57855] tracking-widest uppercase mb-1 leading-none">Qi Yi Craft Workshop</div>
+              <div class="text-3xl font-bold text-[#4a3222] tracking-widest leading-none">奇藝工坊</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-[#a57855] mb-1 leading-none">奇藝工坊設計師</div>
+              <div id="preview-designer" class="text-lg font-bold text-[#6c4627] border-b border-[#a57855] inline-block px-2 leading-tight">造字大師</div>
+            </div>
+          </div>
+
+          <!-- A4 中間核心：圖片樣式注音田字格呈現 -->
+          <div class="my-4 flex flex-col items-center justify-center bg-[#fcf8f2] p-5 rounded-lg border border-[#e6ccb2] shadow-inner">
+            <span class="text-xs text-[#a57855] font-bold mb-3 tracking-widest leading-none">【 漢字造字與注音圖譜 】</span>
+            
+            <!-- A4 預覽注音田字格 (長寬適應 A4 卡片) -->
+            <div class="zhuyin-tianzige-frame w-[250px] h-[190px] border-3 border-[#7f5539]">
+              <!-- 左側：造字田字格 (190px x 190px) -->
+              <div id="preview-tianzige-container" class="tianzige-square w-[190px] h-[190px] relative">
+                <!-- 背景中央十字虛線 (SVG) -->
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                  <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#b08968" stroke-width="1.5" stroke-dasharray="5,5" />
+                  <line x1="50%" y1="0" x2="50%" y2="100%" stroke="#b08968" stroke-width="1.5" stroke-dasharray="5,5" />
+                </svg>
+                <!-- 繪圖確認後，內容同步複製至此 -->
+              </div>
+
+              <!-- 右側：正統直排注音欄 (60px x 190px) -->
+              <div id="preview-zhuyin-column" class="zhuyin-column w-[60px] h-[190px]">
+                <!-- 預覽注音渲染區 -->
+              </div>
+            </div>
+          </div>
+
+          <!-- A4 下半部：說文解字文字資訊表格 -->
+          <div class="space-y-3 text-[#3d2314]">
+            <!-- 部首與筆劃列 -->
+            <div class="grid grid-cols-2 gap-3">
+              <div class="bg-[#f2e9e1] p-2 rounded border border-[#d7c4b7] flex items-center">
+                <span class="font-bold text-[#7f5539] w-16 text-sm leading-none">【部首】</span>
+                <span id="preview-radical" class="text-base font-bold text-[#4a3222] leading-none">乙部</span>
+              </div>
+              <div class="bg-[#f2e9e1] p-2 rounded border border-[#d7c4b7] flex items-center">
+                <span class="font-bold text-[#7f5539] w-20 text-sm leading-none">【總筆劃】</span>
+                <span id="preview-strokes" class="text-base font-bold text-[#4a3222] leading-none">12 劃</span>
+              </div>
+            </div>
+
+            <!-- 詞性 -->
+            <div class="bg-[#f2e9e1] p-2 rounded border border-[#d7c4b7] flex items-center">
+              <span class="font-bold text-[#7f5539] w-16 text-sm leading-none">【詞性】</span>
+              <span id="preview-pos" class="text-base text-[#4a3222] leading-none">形容詞 / 名詞</span>
+            </div>
+
+            <!-- 字義 -->
+            <div class="bg-[#f2e9e1] p-2.5 rounded border border-[#d7c4b7]">
+              <div class="font-bold text-[#7f5539] mb-1 text-sm leading-none">【字義】</div>
+              <div id="preview-meaning" class="text-xs leading-relaxed text-[#4a3222] pl-2">
+                巧妙特殊的技藝，或指創新創意的獨特漢字結構。
+              </div>
+            </div>
+
+            <!-- 語詞與解釋 -->
+            <div class="bg-[#f2e9e1] p-2.5 rounded border border-[#d7c4b7]">
+              <div class="font-bold text-[#7f5539] mb-1 text-sm leading-none">【語詞與解釋】</div>
+              <div id="preview-phrases" class="text-xs leading-relaxed text-[#4a3222] pl-2 whitespace-pre-line">
+                【奇藝】獨特而精妙的技藝與造字藝術。
+                【工坊】百工聚會創作之所。
+              </div>
+            </div>
+          </div>
+
+          <!-- A4 底部章印落款區 -->
+          <div class="mt-2 pt-2 border-t border-[#8c6239] flex justify-between items-center text-xs text-[#a57855]">
+            <div class="leading-none">奇藝工坊 漢字造字典藏圖譜</div>
+            <div class="flex items-center space-x-2">
+              <span class="leading-none">典藏章印：</span>
+              <div class="w-6 h-6 border-2 border-red-700 text-red-700 font-bold flex items-center justify-center text-[10px] rounded-sm leading-none">
+                奇藝
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 奇藝典藏下載按鈕 -->
+        <button id="btn-download" onclick="downloadPNG()" class="w-full py-3.5 bg-[#8c6239] hover:bg-[#6b4728] text-white rounded-xl font-bold text-xl shadow-lg transition flex items-center justify-center space-x-2 border-2 border-[#e6ccb2]">
+          <i class="fa-solid fa-file-arrow-down text-2xl"></i>
+          <span>奇藝典藏下載 (.PNG 檔案)</span>
+        </button>
+
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- 提示訊息框 -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-[#4a3222] text-[#f7f3ed] px-6 py-3 rounded-lg shadow-2xl border-2 border-[#d4a373] flex items-center space-x-3 z-50">
+    <i id="toast-icon" class="fa-solid fa-circle-check text-green-400 text-xl"></i>
+    <span id="toast-msg" class="text-base font-bold">操作成功！</span>
+  </div>
+
+  <script>
+    /* --------------------------------------------------------
+     * 1. 視窗自動等比縮放機制 (Auto Viewport Scaling)
+     * -------------------------------------------------------- */
+    function scaleApp() {
+      const viewport = document.getElementById('app-viewport');
+      const baseWidth = 1920;
+      const baseHeight = 1080;
+
+      const scaleX = window.innerWidth / baseWidth;
+      const scaleY = window.innerHeight / baseHeight;
+      const scale = Math.min(scaleX, scaleY);
+
+      viewport.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener('resize', scaleApp);
+    window.addEventListener('DOMContentLoaded', () => {
+      scaleApp();
+      syncFormToPreview();
+      renderZhuyinStandardLayout(); // 初次渲染標準注音
+      confirmDrawing(); // 初次載入渲染
+    });
+
+    /* --------------------------------------------------------
+     * 2. Toast 提示訊息
+     * -------------------------------------------------------- */
+    function showToast(msg, isSuccess = true) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      const toastIcon = document.getElementById('toast-icon');
+
+      toastMsg.innerText = msg;
+      if (isSuccess) {
+        toastIcon.className = 'fa-solid fa-circle-check text-green-400 text-xl';
+      } else {
+        toastIcon.className = 'fa-solid fa-circle-exclamation text-amber-400 text-xl';
+      }
+
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    /* --------------------------------------------------------
+     * 3. 繁體正統注音符號直排解析與 HTML 渲染引擎
+     * 規則：聲母在上、韻母在下、聲符（ˊ ˇ ˋ）在右、輕聲聲符（˙）在聲母上方
+     * -------------------------------------------------------- */
+    function parseZhuyinSyllable(syllableStr) {
+      if (!syllableStr) return { lightTone: false, symbols: [], toneMark: '' };
+
+      let str = syllableStr.trim();
+      let lightTone = false;
+      let toneMark = '';
+
+      // 檢查是否包含輕聲符號 (˙ 或 •)
+      if (str.includes('˙') || str.includes('•') || str.startsWith('.')) {
+        lightTone = true;
+        str = str.replace(/[˙•.]/g, '');
+      }
+
+      // 檢查二、三、四聲 (ˊ, ˇ, ˋ)
+      if (str.includes('ˊ')) { toneMark = 'ˊ'; str = str.replace('ˊ', ''); }
+      else if (str.includes('ˇ')) { toneMark = 'ˇ'; str = str.replace('ˇ', ''); }
+      else if (str.includes('ˋ')) { toneMark = 'ˋ'; str = str.replace('ˋ', ''); }
+
+      // 拆解剩餘的聲母、介母、韻母
+      const symbols = str.split('').filter(c => c.trim() !== '');
+
+      return { lightTone, symbols, toneMark };
+    }
+
+    function renderZhuyinStandardLayout() {
+      const inputVal = document.getElementById('input-zhuyin').value || 'ㄑㄧˊ ㄧˋ';
+      const syllables = inputVal.trim().split(/\s+/); // 依空格切分音節
+
+      const editorZhuyinCol = document.getElementById('editor-zhuyin-column');
+      const previewZhuyinCol = document.getElementById('preview-zhuyin-column');
+
+      // 編輯區注音 (較大尺寸)
+      let editorHtml = '';
+      syllables.forEach(syl => {
+        const parsed = parseZhuyinSyllable(syl);
+        editorHtml += `
+          <div class="zhuyin-syllable my-1">
+            <!-- 輕聲聲符置頂 -->
+            <div class="text-[18px] leading-none font-extrabold text-[#5c3d24] h-[14px] flex items-center justify-center">
+              ${parsed.lightTone ? '˙' : ''}
+            </div>
+
+            <div class="relative flex items-center justify-center px-1">
+              <!-- 聲母在上，韻母在下 (垂直直排) -->
+              <div class="flex flex-col items-center justify-center text-2xl font-bold leading-tight text-[#5c3d24]">
+                ${parsed.symbols.map(sym => `<span class="my-[0.5px]">${sym}</span>`).join('')}
+              </div>
+
+              <!-- 聲符在右 (二、三、四聲靠右) -->
+              ${parsed.toneMark ? `
+                <div class="absolute -right-4 top-1/2 -translate-y-1/2 text-xl font-extrabold text-[#5c3d24]">
+                  ${parsed.toneMark}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      // 預覽區注音 (適中卡片尺寸)
+      let previewHtml = '';
+      syllables.forEach(syl => {
+        const parsed = parseZhuyinSyllable(syl);
+        previewHtml += `
+          <div class="zhuyin-syllable my-0.5">
+            <!-- 輕聲聲符置頂 -->
+            <div class="text-[14px] leading-none font-extrabold text-[#5c3d24] h-[10px] flex items-center justify-center">
+              ${parsed.lightTone ? '˙' : ''}
+            </div>
+
+            <div class="relative flex items-center justify-center px-0.5">
+              <!-- 聲母在上，韻母在下 -->
+              <div class="flex flex-col items-center justify-center text-xl font-bold leading-tight text-[#5c3d24]">
+                ${parsed.symbols.map(sym => `<span class="my-[0.5px]">${sym}</span>`).join('')}
+              </div>
+
+              <!-- 聲符在右 -->
+              ${parsed.toneMark ? `
+                <div class="absolute -right-3.5 top-1/2 -translate-y-1/2 text-lg font-extrabold text-[#5c3d24]">
+                  ${parsed.toneMark}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      editorZhuyinCol.innerHTML = editorHtml;
+      previewZhuyinCol.innerHTML = previewHtml;
+    }
+
+    /* --------------------------------------------------------
+     * 4. STREAMING_CHUNK:Implementing Proportional & Directional Stretching Logic...
+     * -------------------------------------------------------- */
+    const editor = document.getElementById('tianzige-editor');
+    let selectedItem = null;
+    let isDragging = false;
+    let isResizing = false;
+    let currentResizeHandle = null;
+    let startX, startY, startLeft, startTop, startWidth, startHeight;
+
+    // 新增文字部件
+    document.getElementById('btn-add-char').addEventListener('click', () => {
+      const input = document.getElementById('input-char');
+      const text = input.value.trim();
+      if (!text) {
+        showToast('請輸入要新增的文字部件！', false);
+        return;
+      }
+
+      createTransformItem(text);
+      input.value = '';
+    });
+
+    function createTransformItem(text) {
+      const item = document.createElement('div');
+      item.className = 'transform-item';
+      
+      const textSpan = document.createElement('span');
+      textSpan.innerText = text;
+      textSpan.style.fontSize = '80px';
+      item.appendChild(textSpan);
+
+      // 預設大小與位置
+      const defaultSize = 100;
+      item.style.width = defaultSize + 'px';
+      item.style.height = defaultSize + 'px';
+      item.style.left = (editor.clientWidth / 2 - defaultSize / 2) + 'px';
+      item.style.top = (editor.clientHeight / 2 - defaultSize / 2) + 'px';
+
+      // 建立 8 個編輯控制點 (4頂點 + 4邊線中點)
+      const handles = ['nw', 'n', 'ne', 'w', 'e', 'sw', 's', 'se'];
+      handles.forEach(h => {
+        const handle = document.createElement('div');
+        handle.className = `resize-handle handle-${h}`;
+        handle.dataset.handle = h;
+        item.appendChild(handle);
+      });
+
+      // 綁定事件
+      item.addEventListener('mousedown', onItemMouseDown);
+
+      editor.appendChild(item);
+      selectItem(item);
+      showToast(`已新增部件：「${text}」`);
+    }
+
+    // 選取物件
+    function selectItem(item) {
+      if (selectedItem) {
+        selectedItem.classList.remove('selected');
+      }
+      selectedItem = item;
+      if (selectedItem) {
+        selectedItem.classList.add('selected');
+      }
+    }
+
+    // 點擊編輯器空白處取消選取
+    editor.addEventListener('mousedown', (e) => {
+      if (e.target === editor || e.target.tagName.toLowerCase() === 'svg') {
+        selectItem(null);
+      }
+    });
+
+    // 刪除選取物件
+    document.getElementById('btn-delete-selected').addEventListener('click', () => {
+      if (selectedItem) {
+        editor.removeChild(selectedItem);
+        selectedItem = null;
+        showToast('已刪除選取的物件');
+      } else {
+        showToast('請先選取要刪除的文字部件', false);
+      }
+    });
+
+    /* --- 滑鼠拖曳與 8 角編輯縮放事件處理 --- */
+    function onItemMouseDown(e) {
+      e.stopPropagation();
+      selectItem(this);
+
+      const handle = e.target.closest('.resize-handle');
+      if (handle) {
+        isResizing = true;
+        currentResizeHandle = handle.dataset.handle;
+      } else {
+        isDragging = true;
+      }
+
+      startX = e.clientX;
+      startY = e.clientY;
+      startLeft = parseInt(this.style.left) || 0;
+      startTop = parseInt(this.style.top) || 0;
+      startWidth = parseInt(this.style.width) || 100;
+      startHeight = parseInt(this.style.height) || 100;
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    }
+
+    function onMouseMove(e) {
+      if (!selectedItem) return;
+
+      const viewport = document.getElementById('app-viewport');
+      const matrix = window.getComputedStyle(viewport).transform;
+      let scale = 1;
+      if (matrix && matrix !== 'none') {
+        const values = matrix.split('(')[1].split(')')[0].split(',');
+        scale = parseFloat(values[0]);
+      }
+
+      const dx = (e.clientX - startX) / scale;
+      const dy = (e.clientY - startY) / scale;
+
+      if (isDragging) {
+        let newLeft = startLeft + dx;
+        let newTop = startTop + dy;
+        
+        selectedItem.style.left = newLeft + 'px';
+        selectedItem.style.top = newTop + 'px';
+      } else if (isResizing) {
+        let newW = startWidth;
+        let newH = startHeight;
+        let newL = startLeft;
+        let newT = startTop;
+
+        const handle = currentResizeHandle;
+        const aspect = startWidth / startHeight;
+
+        // 頂點控制點：保持長寬比等比例縮放
+        if (['nw', 'ne', 'sw', 'se'].includes(handle)) {
+          if (handle === 'se') {
+            newW = Math.max(25, startWidth + dx);
+            newH = newW / aspect;
+          } else if (handle === 'sw') {
+            newW = Math.max(25, startWidth - dx);
+            newL = startLeft + (startWidth - newW);
+            newH = newW / aspect;
+          } else if (handle === 'ne') {
+            newW = Math.max(25, startWidth + dx);
+            newH = newW / aspect;
+            newT = startTop + (startHeight - newH);
+          } else if (handle === 'nw') {
+            newW = Math.max(25, startWidth - dx);
+            newL = startLeft + (startWidth - newW);
+            newH = newW / aspect;
+            newT = startTop + (startHeight - newH);
+          }
+        } 
+        // 邊線控制點：單向拉伸與擠壓 (左右或上下)
+        else {
+          if (handle === 'e') {
+            newW = Math.max(20, startWidth + dx);
+          } else if (handle === 'w') {
+            newW = Math.max(20, startWidth - dx);
+            newL = startLeft + (startWidth - newW);
+          } else if (handle === 's') {
+            newH = Math.max(20, startHeight + dy);
+          } else if (handle === 'n') {
+            newH = Math.max(20, startHeight - dy);
+            newT = startTop + (startHeight - newH);
+          }
+        }
+
+        selectedItem.style.width = newW + 'px';
+        selectedItem.style.height = newH + 'px';
+        selectedItem.style.left = newL + 'px';
+        selectedItem.style.top = newT + 'px';
+
+        // 動態調整文字 Transform 縮放與拉伸比例 (基於 100px 標準尺寸)
+        const textSpan = selectedItem.querySelector('span');
+        if (textSpan) {
+          const scaleX = newW / 100;
+          const scaleY = newH / 100;
+          textSpan.style.transform = `scale(${scaleX}, ${scaleY})`;
+        }
+      }
+    }
+
+    function onMouseUp() {
+      isDragging = false;
+      isResizing = false;
+      currentResizeHandle = null;
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    /* --------------------------------------------------------
+     * 5. 繪圖確認：將編輯區備份複製至右側 A4 預覽格
+     * -------------------------------------------------------- */
+    function confirmDrawing() {
+      const previewContainer = document.getElementById('preview-tianzige-container');
+      
+      // 清理舊部件 (保留背景 SVG 十字線)
+      const oldClones = previewContainer.querySelectorAll('.transform-item');
+      oldClones.forEach(el => el.remove());
+
+      // 複製所有部件並按比例縮放 (編輯區 280px -> 預覽區 190px)
+      const items = editor.querySelectorAll('.transform-item');
+      items.forEach(item => {
+        const clone = item.cloneNode(true);
+        clone.classList.remove('selected');
+        
+        const handles = clone.querySelectorAll('.resize-handle');
+        handles.forEach(h => h.remove());
+
+        const ratio = 190 / 280;
+        
+        const origLeft = parseFloat(item.style.left) || 0;
+        const origTop = parseFloat(item.style.top) || 0;
+        const origW = parseFloat(item.style.width) || 100;
+        const origH = parseFloat(item.style.height) || 100;
+
+        clone.style.left = (origLeft * ratio) + 'px';
+        clone.style.top = (origTop * ratio) + 'px';
+        clone.style.width = (origW * ratio) + 'px';
+        clone.style.height = (origH * ratio) + 'px';
+        clone.style.cursor = 'default';
+
+        const cloneSpan = clone.querySelector('span');
+        if (cloneSpan) {
+          const scaleX = (origW / 100) * ratio;
+          const scaleY = (origH / 100) * ratio;
+          cloneSpan.style.transform = `scale(${scaleX}, ${scaleY})`;
+        }
+
+        previewContainer.appendChild(clone);
+      });
+
+      showToast('造字結構已順利同步至右側即時預覽！');
+    }
+
+    /* --------------------------------------------------------
+     * 6. STREAMING_CHUNK:Synchronizing Form Inputs to Preview...
+     * -------------------------------------------------------- */
+    const formFields = [
+      { input: 'input-designer', preview: 'preview-designer' },
+      { input: 'input-radical', preview: 'preview-radical' },
+      { input: 'input-pos', preview: 'preview-pos' },
+      { input: 'input-meaning', preview: 'preview-meaning' },
+      { input: 'input-phrases', preview: 'preview-phrases' }
+    ];
+
+    function syncFormToPreview() {
+      formFields.forEach(field => {
+        const inputEl = document.getElementById(field.input);
+        const previewEl = document.getElementById(field.preview);
+        
+        inputEl.addEventListener('change', () => { previewEl.innerText = inputEl.value; });
+        inputEl.addEventListener('input', () => { previewEl.innerText = inputEl.value; });
+      });
+
+      // 注音符號輸入動態事件
+      const zhuyinInput = document.getElementById('input-zhuyin');
+      zhuyinInput.addEventListener('input', renderZhuyinStandardLayout);
+
+      // 筆劃特殊處理
+      const strokeInput = document.getElementById('input-strokes');
+      const strokePreview = document.getElementById('preview-strokes');
+      strokeInput.addEventListener('input', () => {
+        strokePreview.innerText = (strokeInput.value || 0) + ' 劃';
+      });
+    }
+
+    /* --------------------------------------------------------
+     * STREAMING_CHUNK:Upgrading High-Resolution PNG Export Logic...
+     * 7. 奇藝典藏下載 (.PNG 圖片) - 解決縮放環境下的版面錯位問題
+     * -------------------------------------------------------- */
+    function downloadPNG() {
+      showToast('正在生成高畫質 A4 典藏圖檔，請稍候...');
+      
+      const originalCard = document.getElementById('a4-preview-card');
+
+      if (selectedItem) selectedItem.classList.remove('selected');
+
+      // 1. 建立不受 viewport transform scale 影響的獨立臨時容器
+      const tempContainer = document.createElement('div');
+      tempContainer.style.position = 'fixed';
+      tempContainer.style.left = '-9999px';
+      tempContainer.style.top = '0px';
+      tempContainer.style.width = '580px';
+      tempContainer.style.height = '820px';
+      tempContainer.style.transform = 'none';
+      tempContainer.style.zIndex = '-9999';
+
+      // 2. 複製 A4 預覽卡片節點
+      const cloneCard = originalCard.cloneNode(true);
+      cloneCard.style.transform = 'none';
+      tempContainer.appendChild(cloneCard);
+      document.body.appendChild(tempContainer);
+
+      // 3. 於標準無縮放環境下執行 html2canvas 高解析度繪製
+      html2canvas(cloneCard, {
+        scale: 3,
+        useCORS: true,
+        backgroundColor: '#fffdf9',
+        width: 580,
+        height: 820,
+        scrollX: 0,
+        scrollY: 0,
+        logging: false
+      }).then(canvas => {
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        const designer = document.getElementById('input-designer').value || '造字大師';
+        
+        link.href = image;
+        link.download = `奇藝工坊_造字典藏_${designer}.png`;
+        link.click();
+
+        showToast('下載成功！已保存為高畫質 PNG 圖片檔案');
+      }).catch(err => {
+        console.error(err);
+        showToast('匯出失敗，請重試！', false);
+      }).finally(() => {
+        // 4. 清理臨時 DOM 節點
+        if (document.body.contains(tempContainer)) {
+          document.body.removeChild(tempContainer);
+        }
+      });
+    }
+  </script>
+</body>
+</html>
