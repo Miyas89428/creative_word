@@ -29,7 +29,7 @@
       width: 100vw;
       height: 100vh;
       overflow: hidden;
-      background-color: #2b1d14; /* 沉穩深咖啡色外框 */
+      background-color: #2b1d14; /* 沉穩深咖啡色外框 */ 
       display: flex;
       justify-content: center;
       align-items: center;
@@ -47,22 +47,6 @@
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
       border-radius: 8px;
       overflow: hidden;
-    }
-
-    /* 咖啡色系客製化滾動條 (僅左側使用) */
-    .custom-scroll::-webkit-scrollbar {
-      width: 8px;
-    }
-    .custom-scroll::-webkit-scrollbar-track {
-      background: #eae0d5;
-      border-radius: 4px;
-    }
-    .custom-scroll::-webkit-scrollbar-thumb {
-      background: #8c6239;
-      border-radius: 4px;
-    }
-    .custom-scroll::-webkit-scrollbar-thumb:hover {
-      background: #5c3d24;
     }
 
     /* 注音田字格容器 (典藏咖啡色系圖片樣式) */
@@ -135,7 +119,7 @@
       background-color: rgba(140, 82, 255, 0.08);
     }
 
-    /* 8 個編輯控制點 (4頂點 + 4邊線中點) */
+    /* 編輯控制點 */
     .resize-handle {
       width: 10px;
       height: 10px;
@@ -161,6 +145,19 @@
     .handle-s { bottom: -5px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
     .handle-w { top: 50%; left: -5px; transform: translateY(-50%); cursor: w-resize; }
     .handle-e { top: 50%; right: -5px; transform: translateY(-50%); cursor: e-resize; }
+
+    /* 360度旋轉控制點 */
+    .handle-rotate {
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      cursor: grab;
+      background-color: #8c6239;
+      border-radius: 50%;
+      width: 12px;
+      height: 12px;
+      border: 1px solid #ffffff;
+    }
 
     /* A4 比例畫布 (210mm x 297mm 比例) */
     .a4-paper {
@@ -193,18 +190,18 @@
       <div class="flex items-center space-x-4">
         <i class="fa-solid fa-feather-pointed text-3xl text-[#d4a373]"></i>
         <h1 class="text-3xl font-bold tracking-wider">奇藝工坊</h1>
-        <span class="text-sm bg-[#68462f] px-3 py-1 rounded-full text-[#e6ccb2] border border-[#a57855]">古典漢字造字與說文解字系統</span>
+        <span class="text-sm bg-[#68462f] px-3 py-1 rounded-full text-[#e6ccb2] border border-[#a57855]">漢字造字與說文解字系統</span>
       </div>
       <div class="text-sm text-[#d4a373]">
-        <i class="fa-solid fa-palette mr-2"></i>簡約咖啡色系典藏版
+        <i class="fa-solid fa-palette mr-2"></i>
       </div>
     </header>
 
     <!-- 主要內容區：左右分欄 -->
     <div class="flex-1 flex overflow-hidden">
       
-      <!-- ================= STREAMING_CHUNK:Rendering Left Scrollable Main Panel ================= -->
-      <main class="w-7/12 h-full overflow-y-auto custom-scroll p-8 space-y-8 bg-[#f5ebe0]">
+      <!-- 左側固定主要面板 (已將可滾動修改為固定式) -->
+      <main class="w-7/12 h-full overflow-hidden p-8 space-y-6 bg-[#f5ebe0]">
         
         <!-- 壹、造字繪製與結構組合 -->
         <section class="bg-[#fcf8f2] rounded-xl p-6 border-2 border-[#d7c4b7] shadow-sm">
@@ -213,7 +210,7 @@
               <span class="w-8 h-8 rounded-full bg-[#8c6239] text-[#f7f3ed] flex items-center justify-center text-base mr-3">壹</span>
               造字繪製與結構組合
             </h2>
-            <span class="text-xs text-[#7f5539]">可於預覽格內自由移動與8方位拉伸縮放文字部件</span>
+            <span class="text-xs text-[#7f5539]">可於預覽格內自由移動、360度旋轉與8方位拉伸縮放文字部件</span>
           </div>
 
           <!-- 操作面板 -->
@@ -225,7 +222,7 @@
                 <div class="flex space-x-2">
                   <input type="text" id="input-char" maxlength="2" placeholder="如：木、日、氵" 
                     class="w-full px-4 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] text-xl text-center bg-white text-[#3d2314]">
-                  <button id="btn-add-char" class="px-5 py-2 bg-[#8c6239] hover:bg-[#6b4728] text-white rounded-lg font-bold text-lg shadow transition flex items-center justify-center whitespace-nowrap">
+                  <button id="btn-add-char" class="px-5 py-2 bg-[#8c6239] hover:bg-[#6b4728] text-white rounded-lg font-bold text-lg shadow transition flex items-center justify-center text-center whitespace-nowrap">
                     <i class="fa-solid fa-plus mr-1"></i> 新增
                   </button>
                 </div>
@@ -235,24 +232,24 @@
               <div class="bg-[#f2e9e1] p-3 rounded-lg text-xs text-[#6c4627] space-y-1 border border-[#d7c4b7]">
                 <p class="font-bold text-sm"><i class="fa-solid fa-circle-info mr-1"></i> 操作與注音規範說明：</p>
                 <p>1. 輸入部件後點擊「新增」放入田字格。</p>
-                <p>2. 點擊物件選取後，顯現 <b>8 個編輯點</b>（4 頂點 + 4 邊中點）供精細拉伸縮放與位移。</p>
+                <p>2. 點擊物件選取後，顯現 <b>8 個編輯點</b>（4 頂點 + 4 邊中點）與<b>上方旋轉點</b>供縮放與 360 度旋轉。</p>
                 <p>3. 注音呈現符合<b>繁體正統規範</b>：輕聲（˙）置於聲母上方、聲母在上、韻母在下、聲符（ˊ ˇ ˋ）靠右標註。</p>
               </div>
 
-              <!-- 刪除與確認按鈕群 -->
+              <!-- 刪除與確認按鈕群 (統一文字大小並精準置中) -->
               <div class="space-y-2 pt-2">
-                <button id="btn-delete-selected" class="w-full py-2.5 bg-[#b07d62] hover:bg-[#8f5e45] text-white rounded-lg font-bold shadow transition flex items-center justify-center text-base">
-                  <i class="fa-solid fa-trash-can mr-2"></i> 刪除選取物件
+                <button id="btn-delete-selected" class="w-full py-3 bg-[#b07d62] hover:bg-[#8f5e45] text-white rounded-lg font-bold text-lg shadow transition flex items-center justify-center text-center">
+                  <i class="fa-solid fa-trash-can mr-2"></i>刪除選取物件
                 </button>
-                <button id="btn-confirm-drawing" onclick="confirmDrawing()" class="w-full py-3 bg-[#5c3d24] hover:bg-[#3d2314] text-[#f7f3ed] rounded-lg font-bold shadow-lg transition flex items-center justify-center text-lg">
-                  <i class="fa-solid fa-stamp mr-2 text-[#e6ccb2]"></i> 繪圖確認 (同步至預覽)
+                <button id="btn-confirm-drawing" onclick="confirmDrawing()" class="w-full py-3 bg-[#5c3d24] hover:bg-[#3d2314] text-[#f7f3ed] rounded-lg font-bold text-lg shadow-lg transition flex items-center justify-center text-center">
+                  <i class="fa-solid fa-stamp mr-2 text-[#e6ccb2]"></i>繪圖確認 (同步至預覽)
                 </button>
               </div>
             </div>
 
             <!-- 右側圖片樣式注音田字格繪圖區 -->
             <div class="col-span-7 flex flex-col items-center">
-              <div class="text-sm font-bold text-[#6c4627] mb-2">注音田字格樣式 (8角編輯互動區)</div>
+              <div class="text-sm font-bold text-[#6c4627] mb-2">造字編輯區</div>
               
               <!-- 經典注音田字格 -->
               <div class="zhuyin-tianzige-frame w-[370px] h-[280px]">
@@ -286,49 +283,63 @@
           </div>
 
           <div class="grid grid-cols-2 gap-4">
-            <!-- 設計師 -->
-            <div>
-              <label class="block text-[#5c3d24] font-bold mb-1">奇藝工坊設計師：</label>
+            <!-- 設計師 (左右並列) -->
+            <div class="flex items-center space-x-2">
+              <label class="text-[#5c3d24] font-bold shrink-0">奇藝工坊設計師：</label>
               <input type="text" id="input-designer" value="造字大師" 
                 class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314]">
             </div>
 
-            <!-- 注音符號 -->
-            <div>
-              <label class="block text-[#5c3d24] font-bold mb-1">注音符號 (繁體正統注音)：</label>
+            <!-- 注音符號 (左右並列) -->
+            <div class="flex items-center space-x-2">
+              <label class="text-[#5c3d24] font-bold shrink-0">注音符號：</label>
               <input type="text" id="input-zhuyin" value="ㄑㄧˊ ㄧˋ" placeholder="如：ㄑㄧˊ ㄧˋ 或 ˙ㄇㄚ"
                 class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314]">
             </div>
 
-            <!-- 部首 -->
-            <div>
-              <label class="block text-[#5c3d24] font-bold mb-1">部首：</label>
-              <input type="text" id="input-radical" value="乙部" 
-                class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314]">
-            </div>
+            <!-- 部首、總筆劃、詞性與造字方法 (左右並列) -->
+            <div class="col-span-2 grid grid-cols-4 gap-3">
+              <!-- 部首 -->
+              <div class="flex items-center space-x-1">
+                <label class="text-[#5c3d24] font-bold shrink-0">部首：</label>
+                <input type="text" id="input-radical" value="乙部" 
+                  class="w-full h-[42px] px-2 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314]">
+              </div>
 
-            <!-- 總筆劃 -->
-            <div>
-              <label class="block text-[#5c3d24] font-bold mb-1">總筆劃：</label>
-              <input type="number" id="input-strokes" value="12" 
-                class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314]">
-            </div>
+              <!-- 總筆劃 -->
+              <div class="flex items-center space-x-1">
+                <label class="text-[#5c3d24] font-bold shrink-0">總筆劃：</label>
+                <input type="number" id="input-strokes" value="12" 
+                  class="w-full h-[42px] px-2 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314]">
+              </div>
 
-            <!-- 詞性 (下拉式選單) -->
-            <div class="col-span-2">
-              <label class="block text-[#5c3d24] font-bold mb-1">詞性：</label>
-              <select id="input-pos" class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314] cursor-pointer">
-                <option value="形容詞 / 名詞" selected>形容詞 / 名詞</option>
-                <option value="名詞">名詞</option>
-                <option value="動詞">動詞</option>
-                <option value="形容詞">形容詞</option>
-                <option value="副詞">副詞</option>
-                <option value="代名詞">代名詞</option>
-                <option value="介詞">介詞</option>
-                <option value="連詞">連詞</option>
-                <option value="助詞">助詞</option>
-                <option value="歎詞">歎詞</option>
-              </select>
+              <!-- 詞性 (下拉式選單) -->
+              <div class="flex items-center space-x-1">
+                <label class="text-[#5c3d24] font-bold shrink-0">詞性：</label>
+                <select id="input-pos" class="w-full h-[42px] px-1 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314] cursor-pointer">
+                  <option value="形容詞 / 名詞" selected>形容詞 / 名詞</option>
+                  <option value="名詞">名詞</option>
+                  <option value="動詞">動詞</option>
+                  <option value="形容詞">形容詞</option>
+                  <option value="副詞">副詞</option>
+                  <option value="代名詞">代名詞</option>
+                  <option value="介詞">介詞</option>
+                  <option value="連詞">連詞</option>
+                  <option value="助詞">助詞</option>
+                  <option value="歎詞">歎詞</option>
+                </select>
+              </div>
+
+              <!-- 造字方法 (下拉式選單) -->
+              <div class="flex items-center space-x-1">
+                <label class="text-[#5c3d24] font-bold shrink-0">造字方法：</label>
+                <select id="input-method" class="w-full h-[42px] px-1 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314] cursor-pointer">
+                  <option value="象形" selected>象形</option>
+                  <option value="指事">指事</option>
+                  <option value="會意">會意</option>
+                  <option value="形聲">形聲</option>
+                </select>
+              </div>
             </div>
 
             <!-- 字義 -->
@@ -341,7 +352,7 @@
             <!-- 語詞與解釋 -->
             <div class="col-span-2">
               <label class="block text-[#5c3d24] font-bold mb-1">語詞與解釋：</label>
-              <textarea id="input-phrases" rows="3" 
+              <textarea id="input-phrases" rows="2" 
                 class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314] resize-none">【奇藝】獨特而精妙的技藝與造字藝術。
 【工坊】百工聚會創作之所。</textarea>
             </div>
@@ -349,15 +360,15 @@
         </section>
       </main>
 
-      <!-- ================= STREAMING_CHUNK:Rendering Right Fixed A4 Preview Panel ================= -->
+      <!-- 右側固定 A4 預覽面板 -->
       <aside class="w-5/12 h-full bg-[#ded2c3] p-8 flex flex-col items-center justify-between border-l-4 border-[#b08968]">
         
         <div class="w-full flex items-center justify-between mb-2">
           <h2 class="text-2xl font-bold text-[#4a3222] flex items-center">
             <span class="w-8 h-8 rounded-full bg-[#8c6239] text-[#f7f3ed] flex items-center justify-center text-base mr-3">參</span>
-            參、即時預覽
+            即時預覽
           </h2>
-          <span class="text-xs bg-[#c9b5a0] text-[#4a3222] px-2.5 py-1 rounded font-bold">A4 典藏規格</span>
+          <span class="text-xs bg-[#c9b5a0] text-[#4a3222] px-2.5 py-1 rounded font-bold">典藏規格</span>
         </div>
 
         <!-- 固定 A4 尺寸卡片預覽區 -->
@@ -377,7 +388,7 @@
 
           <!-- A4 中間核心：圖片樣式注音田字格呈現 -->
           <div class="my-4 flex flex-col items-center justify-center bg-[#fcf8f2] p-5 rounded-lg border border-[#e6ccb2] shadow-inner">
-            <span class="text-xs text-[#a57855] font-bold mb-3 tracking-widest leading-none">【 漢字造字與注音圖譜 】</span>
+            <span class="text-xs text-[#a57855] font-bold mb-3 tracking-widest leading-none"></span>
             
             <!-- A4 預覽注音田字格 (長寬適應 A4 卡片) -->
             <div class="zhuyin-tianzige-frame w-[250px] h-[190px] border-3 border-[#7f5539]">
@@ -400,22 +411,24 @@
 
           <!-- A4 下半部：說文解字文字資訊表格 -->
           <div class="space-y-3 text-[#3d2314]">
-            <!-- 部首與筆劃列 -->
-            <div class="grid grid-cols-2 gap-3">
-              <div class="bg-[#f2e9e1] p-2 rounded border border-[#d7c4b7] flex items-center">
-                <span class="font-bold text-[#7f5539] w-16 text-sm leading-none">【部首】</span>
-                <span id="preview-radical" class="text-base font-bold text-[#4a3222] leading-none">乙部</span>
+            <!-- 部首、總筆劃、詞性與造字並列 (增加高度、項目名稱靠左置上、同步內容靠右置中並放大字體) -->
+            <div class="grid grid-cols-4 gap-2">
+              <div class="bg-[#f2e9e1] p-2.5 rounded border border-[#d7c4b7] h-[80px] relative flex items-center justify-end">
+                <span class="absolute top-2 left-2 text-xs font-bold text-[#7f5539] leading-none">【部首】</span>
+                <span id="preview-radical" class="text-xl font-bold text-[#4a3222] leading-none truncate text-right">乙部</span>
               </div>
-              <div class="bg-[#f2e9e1] p-2 rounded border border-[#d7c4b7] flex items-center">
-                <span class="font-bold text-[#7f5539] w-20 text-sm leading-none">【總筆劃】</span>
-                <span id="preview-strokes" class="text-base font-bold text-[#4a3222] leading-none">12 劃</span>
+              <div class="bg-[#f2e9e1] p-2.5 rounded border border-[#d7c4b7] h-[80px] relative flex items-center justify-end">
+                <span class="absolute top-2 left-2 text-xs font-bold text-[#7f5539] leading-none">【總筆劃】</span>
+                <span id="preview-strokes" class="text-xl font-bold text-[#4a3222] leading-none truncate text-right">12 劃</span>
               </div>
-            </div>
-
-            <!-- 詞性 -->
-            <div class="bg-[#f2e9e1] p-2 rounded border border-[#d7c4b7] flex items-center">
-              <span class="font-bold text-[#7f5539] w-16 text-sm leading-none">【詞性】</span>
-              <span id="preview-pos" class="text-base text-[#4a3222] leading-none">形容詞 / 名詞</span>
+              <div class="bg-[#f2e9e1] p-2.5 rounded border border-[#d7c4b7] h-[80px] relative flex items-center justify-end">
+                <span class="absolute top-2 left-2 text-xs font-bold text-[#7f5539] leading-none">【詞性】</span>
+                <span id="preview-pos" class="text-lg font-bold text-[#4a3222] leading-none truncate text-right">形容詞 / 名詞</span>
+              </div>
+              <div class="bg-[#f2e9e1] p-2.5 rounded border border-[#d7c4b7] h-[80px] relative flex items-center justify-end">
+                <span class="absolute top-2 left-2 text-xs font-bold text-[#7f5539] leading-none">【造字】</span>
+                <span id="preview-method" class="text-xl font-bold text-[#4a3222] leading-none truncate text-right">象形</span>
+              </div>
             </div>
 
             <!-- 字義 -->
@@ -436,12 +449,11 @@
             </div>
           </div>
 
-          <!-- A4 底部章印落款區 -->
+          <!-- A4 底部章印落款區 (已刪除典藏章印字樣，並將紅框奇藝改為咖啡色系) -->
           <div class="mt-2 pt-2 border-t border-[#8c6239] flex justify-between items-center text-xs text-[#a57855]">
             <div class="leading-none">奇藝工坊 漢字造字典藏圖譜</div>
             <div class="flex items-center space-x-2">
-              <span class="leading-none">典藏章印：</span>
-              <div class="w-6 h-6 border-2 border-red-700 text-red-700 font-bold flex items-center justify-center text-[10px] rounded-sm leading-none">
+              <div class="w-6 h-6 border-2 border-[#7f5539] text-[#7f5539] font-bold flex items-center justify-center text-[10px] rounded-sm leading-none">
                 奇藝
               </div>
             </div>
@@ -450,9 +462,9 @@
         </div>
 
         <!-- 奇藝典藏下載按鈕 -->
-        <button id="btn-download" onclick="downloadPNG()" class="w-full py-3.5 bg-[#8c6239] hover:bg-[#6b4728] text-white rounded-xl font-bold text-xl shadow-lg transition flex items-center justify-center space-x-2 border-2 border-[#e6ccb2]">
+        <button id="btn-download" onclick="downloadPNG()" class="w-full py-3.5 bg-[#8c6239] hover:bg-[#6b4728] text-white rounded-xl font-bold text-xl shadow-lg transition flex items-center justify-center text-center space-x-2 border-2 border-[#e6ccb2]">
           <i class="fa-solid fa-file-arrow-down text-2xl"></i>
-          <span>奇藝典藏下載 (.PNG 檔案)</span>
+          <span>奇藝典藏下載 (.PNG)</span>
         </button>
 
       </aside>
@@ -607,12 +619,13 @@
     }
 
     /* --------------------------------------------------------
-     * 4. STREAMING_CHUNK:Implementing Proportional & Directional Stretching Logic...
+     * 4. 編輯拖拽、拉伸縮放與 360 度旋轉邏輯
      * -------------------------------------------------------- */
     const editor = document.getElementById('tianzige-editor');
     let selectedItem = null;
     let isDragging = false;
     let isResizing = false;
+    let isRotating = false;
     let currentResizeHandle = null;
     let startX, startY, startLeft, startTop, startWidth, startHeight;
 
@@ -632,6 +645,7 @@
     function createTransformItem(text) {
       const item = document.createElement('div');
       item.className = 'transform-item';
+      item.dataset.rotation = '0';
       
       const textSpan = document.createElement('span');
       textSpan.innerText = text;
@@ -645,12 +659,15 @@
       item.style.left = (editor.clientWidth / 2 - defaultSize / 2) + 'px';
       item.style.top = (editor.clientHeight / 2 - defaultSize / 2) + 'px';
 
-      // 建立 8 個編輯控制點 (4頂點 + 4邊線中點)
-      const handles = ['nw', 'n', 'ne', 'w', 'e', 'sw', 's', 'se'];
+      // 建立 8 個編輯控制點 (4頂點 + 4邊線中點) + 1個頂部旋轉點
+      const handles = ['nw', 'n', 'ne', 'w', 'e', 'sw', 's', 'se', 'rotate'];
       handles.forEach(h => {
         const handle = document.createElement('div');
         handle.className = `resize-handle handle-${h}`;
         handle.dataset.handle = h;
+        if (h === 'rotate') {
+          handle.title = '拖拽進行 360 度旋轉';
+        }
         item.appendChild(handle);
       });
 
@@ -691,15 +708,19 @@
       }
     });
 
-    /* --- 滑鼠拖曳與 8 角編輯縮放事件處理 --- */
+    /* --- 滑鼠拖曳、縮放與 360 度旋轉事件處理 --- */
     function onItemMouseDown(e) {
       e.stopPropagation();
       selectItem(this);
 
       const handle = e.target.closest('.resize-handle');
       if (handle) {
-        isResizing = true;
-        currentResizeHandle = handle.dataset.handle;
+        if (handle.dataset.handle === 'rotate') {
+          isRotating = true;
+        } else {
+          isResizing = true;
+          currentResizeHandle = handle.dataset.handle;
+        }
       } else {
         isDragging = true;
       }
@@ -729,7 +750,15 @@
       const dx = (e.clientX - startX) / scale;
       const dy = (e.clientY - startY) / scale;
 
-      if (isDragging) {
+      if (isRotating) {
+        const rect = selectedItem.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const radians = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+        let degrees = radians * (180 / Math.PI) + 90;
+        selectedItem.dataset.rotation = degrees;
+        selectedItem.style.transform = `rotate(${degrees}deg)`;
+      } else if (isDragging) {
         let newLeft = startLeft + dx;
         let newTop = startTop + dy;
         
@@ -797,6 +826,7 @@
     function onMouseUp() {
       isDragging = false;
       isResizing = false;
+      isRotating = false;
       currentResizeHandle = null;
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
@@ -827,11 +857,13 @@
         const origTop = parseFloat(item.style.top) || 0;
         const origW = parseFloat(item.style.width) || 100;
         const origH = parseFloat(item.style.height) || 100;
+        const origRot = item.dataset.rotation || 0;
 
         clone.style.left = (origLeft * ratio) + 'px';
         clone.style.top = (origTop * ratio) + 'px';
         clone.style.width = (origW * ratio) + 'px';
         clone.style.height = (origH * ratio) + 'px';
+        clone.style.transform = `rotate(${origRot}deg)`;
         clone.style.cursor = 'default';
 
         const cloneSpan = clone.querySelector('span');
@@ -848,11 +880,12 @@
     }
 
     /* --------------------------------------------------------
-     * 6. STREAMING_CHUNK:Synchronizing Form Inputs to Preview...
+     * 6. 表單輸入同步至右側 A4 預覽區
      * -------------------------------------------------------- */
     const formFields = [
       { input: 'input-designer', preview: 'preview-designer' },
       { input: 'input-radical', preview: 'preview-radical' },
+      { input: 'input-method', preview: 'preview-method' },
       { input: 'input-pos', preview: 'preview-pos' },
       { input: 'input-meaning', preview: 'preview-meaning' },
       { input: 'input-phrases', preview: 'preview-phrases' }
@@ -863,8 +896,11 @@
         const inputEl = document.getElementById(field.input);
         const previewEl = document.getElementById(field.preview);
         
-        inputEl.addEventListener('change', () => { previewEl.innerText = inputEl.value; });
-        inputEl.addEventListener('input', () => { previewEl.innerText = inputEl.value; });
+        if (inputEl && previewEl) {
+          previewEl.innerText = inputEl.value;
+          inputEl.addEventListener('change', () => { previewEl.innerText = inputEl.value; });
+          inputEl.addEventListener('input', () => { previewEl.innerText = inputEl.value; });
+        }
       });
 
       // 注音符號輸入動態事件
@@ -880,8 +916,7 @@
     }
 
     /* --------------------------------------------------------
-     * STREAMING_CHUNK:Upgrading High-Resolution PNG Export Logic...
-     * 7. 奇藝典藏下載 (.PNG 圖片) - 解決縮放環境下的版面錯位問題
+     * 7. 奇藝典藏下載 (.PNG 圖片)
      * -------------------------------------------------------- */
     function downloadPNG() {
       showToast('正在生成高畫質 A4 典藏圖檔，請稍候...');
