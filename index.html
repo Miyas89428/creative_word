@@ -40,9 +40,9 @@
   </script>
 
   <style>
-    /* 全站字體按比例放大與標楷體設定 */
+    /* 全站字體按比例放大（提升至 130%）與標楷體設定 */
     html {
-      font-size: 112.5%;
+      font-size: 130%;
     }
 
     body, input, select, textarea, button, h1, h2, h3, h4, h5, h6 {
@@ -313,7 +313,7 @@
             </h3>
             <input type="date" id="teacherAnnounceDate" onchange="loadAnnouncementForDate()" class="text-xs border border-slate-200 rounded-lg p-1 bg-slate-50 text-slate-600 cursor-pointer">
           </div>
-          <p class="text-[11px] text-slate-400 mb-2">💡 按 Enter 鍵自動跳至下一列</p>
+          <p class="text-xs text-slate-400 mb-2">💡 按 Enter 鍵自動跳至下一列</p>
           <textarea id="teacherAnnounceInput" rows="5" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-400 focus:outline-none transition-all resize-y" placeholder="1. 請輸入公告或作業..."></textarea>
           <button onclick="saveAnnouncement()" class="mt-2 w-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-medium py-2 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1">
             <i class="fa-solid fa-floppy-disk"></i> 儲存此日公告
@@ -350,7 +350,7 @@
             <div class="flex items-center gap-2 w-full sm:w-auto">
               <div class="bg-amber-100 text-amber-700 p-2 rounded-xl text-lg shadow-sm">🏆</div>
               <div>
-                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">全組到齊名次欄</div>
+                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">全組到齊名次欄</div>
                 <div id="allPresentRankList" class="flex flex-wrap gap-1.5 mt-0.5 text-xs font-medium text-slate-700">
                   <span class="text-xs text-slate-400 italic">尚無小組全組到齊</span>
                 </div>
@@ -416,8 +416,8 @@
             </div>
             <div>
               <label class="block font-medium text-slate-600 mb-1">組別與學生名單</label>
-              <p class="text-[10px] text-slate-400 mb-1">組別：學生姓名、學生姓名、學生姓名</p>
-              <textarea id="cfgClassStudents" rows="5" class="w-full p-2 border rounded-lg bg-white font-mono text-[11px]"></textarea>
+              <p class="text-xs text-slate-400 mb-1">組別：學生姓名、學生姓名、學生姓名</p>
+              <textarea id="cfgClassStudents" rows="5" class="w-full p-2 border rounded-lg bg-white font-mono text-xs"></textarea>
             </div>
             
             <button onclick="saveClassroomConfig()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-medium transition-colors shadow-sm">
@@ -425,11 +425,11 @@
             </button>
           </div>
 
-          <!-- Classroom List (指令 1: 建立教室列表中新增個別刪除按鈕) -->
+          <!-- Classroom List -->
           <div>
             <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">已建立教室列表</h4>
             <div id="classroomListContainer" class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-              <!-- Dynamic Classroom items with Delete button -->
+              <!-- Dynamic Classroom items -->
             </div>
           </div>
 
@@ -453,15 +453,13 @@
 
       </div>
 
-      <!-- 指令 3: 在教師權限登入頁面右側新增等比例放大的三角形圖示隱藏式收合 QR CODE 欄位 -->
+      <!-- 右側隱藏式 QR CODE 欄位 -->
       <div id="teacherQrDrawer" class="fixed right-0 top-1/2 -translate-y-1/2 z-40 flex items-center transition-transform duration-300 translate-x-[calc(100%-3rem)]">
-        <!-- 展開/收合控制按鈕 (帶三角形圖示) -->
         <button id="qrDrawerToggleBtn" onclick="toggleQrDrawer()" class="bg-emerald-600 hover:bg-emerald-700 text-white w-12 h-36 rounded-l-2xl shadow-2xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all border-l border-t border-b border-white/30 group" title="點擊展開/收合 QR Code">
           <i id="qrDrawerTriangleIcon" class="fa-solid fa-play text-sm transition-transform duration-300 -rotate-180 group-hover:scale-125"></i>
           <span class="text-xs font-bold tracking-widest [writing-mode:vertical-lr] select-none">QR CODE</span>
         </button>
 
-        <!-- 側邊欄展開內容 (等比例放大) -->
         <div class="bg-white/95 backdrop-blur-md p-6 rounded-l-3xl shadow-2xl border-l border-y border-slate-200/80 w-[360px] flex flex-col items-center text-center">
           <div class="flex items-center justify-between w-full mb-4 pb-3 border-b border-slate-100">
             <span class="text-base font-bold text-slate-800 flex items-center gap-2">
@@ -475,7 +473,7 @@
           </div>
           
           <p class="text-xs text-slate-600 leading-relaxed font-medium">
-            使用手機相機掃描上方放大版 QR Code，即可快速連至本網頁初始畫面開始點名。
+            使用手機相機掃描上方 QR Code，即可快速連至本網頁初始畫面開始點名。
           </p>
         </div>
       </div>
@@ -526,7 +524,7 @@
             </div>
 
             <!-- Leaderboard -->
-            <div class="bg-amber-50/90 border border-amber-200/60 px-2.5 py-1.5 rounded-xl flex flex-col gap-1 text-[11px] shadow-sm w-full sm:w-auto shrink max-w-xs">
+            <div class="bg-amber-50/90 border border-amber-200/60 px-2.5 py-1.5 rounded-xl flex flex-col gap-1 text-xs shadow-sm w-full sm:w-auto shrink max-w-xs">
               <div class="flex items-center gap-1.5">
                 <span class="font-bold text-amber-700 flex items-center gap-1 shrink-0">🏆 到齊順序：</span>
                 <div id="studentRankList" class="flex gap-1 flex-wrap">
@@ -555,7 +553,7 @@
 
   </main>
 
-  <!-- MODAL 1: Teacher Password Modal (指令 2: 點選後僅顯示提示文字不自動輸入內容) -->
+  <!-- MODAL 1: Teacher Password Modal -->
   <div id="modalTeacherAuth" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 transform transition-all">
       <div class="text-center mb-5">
@@ -636,23 +634,23 @@
           <label class="block font-bold text-rose-800 mb-1">勾選週期性請假星期 (周一至周五) <span class="text-rose-500">*</span></label>
           <div class="grid grid-cols-5 gap-1 text-center">
             <label class="flex flex-col items-center cursor-pointer hover:bg-rose-100 p-1 rounded transition-colors">
-              <span class="text-[10px] text-slate-600 mb-0.5">週一</span>
+              <span class="text-xs text-slate-600 mb-0.5">週一</span>
               <input type="checkbox" class="leave-weekday-cb text-rose-600 focus:ring-rose-400 rounded" value="1">
             </label>
             <label class="flex flex-col items-center cursor-pointer hover:bg-rose-100 p-1 rounded transition-colors">
-              <span class="text-[10px] text-slate-600 mb-0.5">週二</span>
+              <span class="text-xs text-slate-600 mb-0.5">週二</span>
               <input type="checkbox" class="leave-weekday-cb text-rose-600 focus:ring-rose-400 rounded" value="2">
             </label>
             <label class="flex flex-col items-center cursor-pointer hover:bg-rose-100 p-1 rounded transition-colors">
-              <span class="text-[10px] text-slate-600 mb-0.5">週三</span>
+              <span class="text-xs text-slate-600 mb-0.5">週三</span>
               <input type="checkbox" class="leave-weekday-cb text-rose-600 focus:ring-rose-400 rounded" value="3">
             </label>
             <label class="flex flex-col items-center cursor-pointer hover:bg-rose-100 p-1 rounded transition-colors">
-              <span class="text-[10px] text-slate-600 mb-0.5">週四</span>
+              <span class="text-xs text-slate-600 mb-0.5">週四</span>
               <input type="checkbox" class="leave-weekday-cb text-rose-600 focus:ring-rose-400 rounded" value="4">
             </label>
             <label class="flex flex-col items-center cursor-pointer hover:bg-rose-100 p-1 rounded transition-colors">
-              <span class="text-[10px] text-slate-600 mb-0.5">週五</span>
+              <span class="text-xs text-slate-600 mb-0.5">週五</span>
               <input type="checkbox" class="leave-weekday-cb text-rose-600 focus:ring-rose-400 rounded" value="5">
             </label>
           </div>
@@ -690,20 +688,28 @@
   <!-- MODAL 4: Red Grid Modal -->
   <div id="modalRedGrid" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-6">
     <div class="bg-white rounded-3xl w-full max-w-5xl h-[88vh] flex flex-col shadow-2xl overflow-hidden border border-slate-100">
-      <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+      <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50">
         <div class="flex items-center gap-3">
           <div class="w-9 h-9 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center font-bold text-lg shadow-sm">📊</div>
           <div>
             <h3 class="font-bold text-sm text-slate-800">查詢我的紅格子 (唯讀檢視)</h3>
             <div class="flex items-center gap-2 mt-0.5">
-              <span class="text-[11px] text-slate-500">每 30 秒系統自動重新整理同步內容</span>
-              <span id="redGridCountdown" class="bg-amber-100 text-amber-800 font-mono text-[10px] px-2 py-0.5 rounded-full font-bold">30s</span>
+              <span class="text-xs text-slate-500">每 30 秒系統自動重新整理同步內容</span>
+              <span id="redGridCountdown" class="bg-amber-100 text-amber-800 font-mono text-xs px-2 py-0.5 rounded-full font-bold">30s</span>
             </div>
           </div>
         </div>
-        <button onclick="closeModal('modalRedGrid')" class="bg-slate-200 hover:bg-slate-300 p-2 rounded-full text-slate-600 text-xs transition-colors">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+
+        <!-- 教室編號查詢輸入框 -->
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <input type="text" id="redGridInputClassId" placeholder="請輸入教室編號 (例: ER101)" onkeydown="if(event.key==='Enter') queryRedGridByClassId()" class="w-full sm:w-48 text-xs p-2 border border-slate-300 rounded-xl font-mono uppercase bg-white focus:ring-2 focus:ring-amber-400 focus:outline-none">
+          <button onclick="queryRedGridByClassId()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-2 rounded-xl font-bold shadow-sm transition-colors shrink-0 flex items-center gap-1">
+            <i class="fa-solid fa-magnifying-glass"></i> 查詢
+          </button>
+          <button onclick="closeModal('modalRedGrid')" class="bg-slate-200 hover:bg-slate-300 p-2 rounded-full text-slate-600 text-xs transition-colors">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
       </div>
 
       <div class="flex-1 bg-slate-100 relative">
@@ -729,38 +735,38 @@
             <label class="font-bold text-amber-900 flex items-center gap-1.5 text-xs">
               <i class="fa-solid fa-plus-circle text-amber-600"></i> 遲到規定週期設定
             </label>
-            <button type="button" onclick="toggleAllWeekdays()" class="text-[10px] bg-amber-200/80 hover:bg-amber-300 text-amber-800 px-2 py-0.5 rounded-md font-semibold transition-colors">
+            <button type="button" onclick="toggleAllWeekdays()" class="text-xs bg-amber-200/80 hover:bg-amber-300 text-amber-800 px-2 py-0.5 rounded-md font-semibold transition-colors">
               全選 / 反選星期
             </button>
           </div>
 
           <div class="grid grid-cols-7 gap-1 bg-white p-2.5 rounded-xl border border-amber-200/70">
             <label class="flex flex-col items-center cursor-pointer hover:bg-amber-50 rounded p-1 transition-colors">
-              <span class="text-[10px] text-slate-500 mb-0.5">週一</span>
+              <span class="text-xs text-slate-500 mb-0.5">週一</span>
               <input type="checkbox" class="tardy-day-cb rounded text-amber-600 focus:ring-amber-400" value="1" checked>
             </label>
             <label class="flex flex-col items-center cursor-pointer hover:bg-amber-50 rounded p-1 transition-colors">
-              <span class="text-[10px] text-slate-500 mb-0.5">週二</span>
+              <span class="text-xs text-slate-500 mb-0.5">週二</span>
               <input type="checkbox" class="tardy-day-cb rounded text-amber-600 focus:ring-amber-400" value="2" checked>
             </label>
             <label class="flex flex-col items-center cursor-pointer hover:bg-amber-50 rounded p-1 transition-colors">
-              <span class="text-[10px] text-slate-500 mb-0.5">週三</span>
+              <span class="text-xs text-slate-500 mb-0.5">週三</span>
               <input type="checkbox" class="tardy-day-cb rounded text-amber-600 focus:ring-amber-400" value="3" checked>
             </label>
             <label class="flex flex-col items-center cursor-pointer hover:bg-amber-50 rounded p-1 transition-colors">
-              <span class="text-[10px] text-slate-500 mb-0.5">週四</span>
+              <span class="text-xs text-slate-500 mb-0.5">週四</span>
               <input type="checkbox" class="tardy-day-cb rounded text-amber-600 focus:ring-amber-400" value="4" checked>
             </label>
             <label class="flex flex-col items-center cursor-pointer hover:bg-amber-50 rounded p-1 transition-colors">
-              <span class="text-[10px] text-slate-500 mb-0.5">週五</span>
+              <span class="text-xs text-slate-500 mb-0.5">週五</span>
               <input type="checkbox" class="tardy-day-cb rounded text-amber-600 focus:ring-amber-400" value="5" checked>
             </label>
             <label class="flex flex-col items-center cursor-pointer hover:bg-amber-50 rounded p-1 transition-colors">
-              <span class="text-[10px] text-slate-500 mb-0.5">週六</span>
+              <span class="text-xs text-slate-500 mb-0.5">週六</span>
               <input type="checkbox" class="tardy-day-cb rounded text-amber-600 focus:ring-amber-400" value="6">
             </label>
             <label class="flex flex-col items-center cursor-pointer hover:bg-amber-50 rounded p-1 transition-colors">
-              <span class="text-[10px] text-slate-500 mb-0.5">週日</span>
+              <span class="text-xs text-slate-500 mb-0.5">週日</span>
               <input type="checkbox" class="tardy-day-cb rounded text-amber-600 focus:ring-amber-400" value="0">
             </label>
           </div>
@@ -792,7 +798,7 @@
             <label class="font-bold text-slate-800 flex items-center gap-1">
               <i class="fa-solid fa-list-check text-sky-500"></i> 已生效遲到規則列表
             </label>
-            <span id="activeRuleCountBadge" class="text-[10px] bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full font-bold">0 條規則</span>
+            <span id="activeRuleCountBadge" class="text-xs bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full font-bold">0 條規則</span>
           </div>
 
           <div id="activeTardyRulesList" class="space-y-2 bg-slate-50 border border-slate-200 rounded-2xl p-3 max-h-48 overflow-y-auto">
@@ -805,7 +811,7 @@
             <label class="font-bold text-slate-800 flex items-center gap-1">
               <i class="fa-solid fa-clipboard-list text-rose-500"></i> 學生遲到紀錄明細 (自動觸發登錄)
             </label>
-            <button onclick="clearTardyLogs()" class="text-[11px] text-rose-500 hover:underline">清空紀錄</button>
+            <button onclick="clearTardyLogs()" class="text-xs text-rose-500 hover:underline">清空紀錄</button>
           </div>
           <div id="tardyLogsContainer" class="bg-slate-50 border border-slate-200 rounded-2xl p-3 max-h-36 overflow-y-auto space-y-1.5">
             <p class="text-slate-400 text-center py-2">目前無遲到紀錄</p>
@@ -819,7 +825,38 @@
     </div>
   </div>
 
-  <!-- Firebase SDK Modules -->
+  <!-- 同網域/同裝置多分頁廣播通道 (Requirement 2) -->
+  <script>
+    const localSyncChannel = new BroadcastChannel('erchong_attendance_local_channel');
+    
+    localSyncChannel.onmessage = (event) => {
+      if (event.data && event.data.type === 'CLASSROOM_DATA_UPDATED') {
+        const { classId, classroomsMap } = event.data;
+        window.appState.savedClassrooms = classroomsMap || window.appState.savedClassrooms;
+        
+        if (classId && window.appState.savedClassrooms[classId]) {
+          if (window.appState.currentClassId === classId) {
+            window.appState.classData = window.appState.savedClassrooms[classId];
+          }
+        }
+        renderActiveView();
+      }
+    };
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'erchong_attendance_saved_classrooms' && e.newValue) {
+        try {
+          window.appState.savedClassrooms = JSON.parse(e.newValue);
+          if (window.appState.currentClassId && window.appState.savedClassrooms[window.appState.currentClassId]) {
+            window.appState.classData = window.appState.savedClassrooms[window.appState.currentClassId];
+          }
+          renderActiveView();
+        } catch(err){}
+      }
+    });
+  </script>
+
+  <!-- Firebase SDK Modules & Cross-Device/Cross-Domain Sync (Requirement 1 & 2) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -830,7 +867,7 @@
       auth: null,
       appId: typeof __app_id !== 'undefined' ? __app_id : 'erchong-attendance-app',
       teacherPassword: '',
-      currentClassId: 'ER101',
+      currentClassId: '',
       currentView: 'home',
       isTeacherAuthenticated: false,
       selectedStudentGroup: '',
@@ -838,8 +875,8 @@
       studentSelectedDate: getCSTDateString(),
       savedClassrooms: {},
       classData: {
-        classId: 'ER101',
-        description: '資優班綜合課程',
+        classId: '',
+        description: '',
         sheetUrl: '',
         firstPlaceCounts: {},
         firstPlaceHistory: {},
@@ -853,17 +890,15 @@
           }
         ],
         tardyLogs: [],
-        groups: [
-          { name: '第一組', students: ['小明', '小華', '小美', '阿強'] },
-          { name: '第二組', students: ['阿傑', '小麗', '阿豪', '雅婷'] },
-          { name: '第三組', students: ['軒軒', '婷婷', '宇軒', '睿睿'] }
-        ],
+        groups: [],
         announcements: {},
         leaves: [],
         attendance: {},
         completedGroups: {}
       }
     };
+
+    let publicClassUnsubscribe = null;
 
     async function initFirebase() {
       try {
@@ -902,8 +937,47 @@
         const localData = localStorage.getItem('erchong_attendance_saved_classrooms');
         if (localData) {
           window.appState.savedClassrooms = JSON.parse(localData);
+          const keys = Object.keys(window.appState.savedClassrooms);
+          if (keys.length > 0 && !window.appState.currentClassId) {
+            window.appState.currentClassId = keys[0];
+            window.appState.classData = window.appState.savedClassrooms[keys[0]];
+            setupClassroomRealtimeSync(keys[0]);
+          }
         }
       } catch(e) {}
+    }
+
+    // 跨裝置、跨網域實時同步指定教室資料 (Requirement 1 & 2)
+    function setupClassroomRealtimeSync(classId) {
+      if (!classId) return;
+      const { db, appId } = window.appState;
+
+      if (publicClassUnsubscribe) {
+        publicClassUnsubscribe();
+        publicClassUnsubscribe = null;
+      }
+
+      if (!db) return;
+
+      const upperClassId = classId.toUpperCase();
+      const publicClassRef = doc(db, 'artifacts', appId, 'public', 'data', 'public_classrooms', upperClassId);
+
+      publicClassUnsubscribe = onSnapshot(publicClassRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const freshData = docSnap.data();
+          window.appState.classData = freshData;
+          if (!window.appState.savedClassrooms) window.appState.savedClassrooms = {};
+          window.appState.savedClassrooms[upperClassId] = freshData;
+
+          try {
+            localStorage.setItem('erchong_attendance_saved_classrooms', JSON.stringify(window.appState.savedClassrooms));
+          } catch(e) {}
+
+          renderActiveView();
+        }
+      }, (error) => {
+        console.error("Realtime classroom sync error:", error);
+      });
     }
 
     async function setupTeacherRealtimeSync(password) {
@@ -944,8 +1018,16 @@
         localStorage.setItem('erchong_attendance_saved_classrooms', JSON.stringify(savedClassrooms));
       } catch(e) {}
 
+      // 本地多分頁廣播 (Requirement 2)
+      localSyncChannel.postMessage({
+        type: 'CLASSROOM_DATA_UPDATED',
+        classId: currentClassId,
+        classroomsMap: savedClassrooms
+      });
+
       if (!db) return;
 
+      // 跨裝置與跨網域實時同步寫入 (Requirement 1)
       try {
         if (teacherPassword) {
           const safePasswordKey = btoa(encodeURIComponent(teacherPassword)).replace(/[/+=]/g, '_');
@@ -968,6 +1050,7 @@
 
     window.saveClassroomToFirestore = saveClassroomToFirestore;
     window.setupTeacherRealtimeSync = setupTeacherRealtimeSync;
+    window.setupClassroomRealtimeSync = setupClassroomRealtimeSync;
     window.initFirebase = initFirebase;
   </script>
 
@@ -1022,7 +1105,7 @@
 
     function checkAndResetDailyAttendance() {
       const todayStr = getCSTDateString();
-      if (!window.appState.classData.attendance[todayStr]) {
+      if (window.appState.classData && !window.appState.classData.attendance[todayStr]) {
         window.appState.classData.attendance[todayStr] = {};
         window.appState.classData.completedGroups[todayStr] = [];
         if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
@@ -1087,7 +1170,7 @@
         document.getElementById('homeBtn').classList.remove('hidden');
         document.getElementById('activeClassBadge').classList.remove('hidden');
         document.getElementById('activeClassBadge').classList.add('flex');
-        document.getElementById('activeClassText').innerText = `教室：${window.appState.currentClassId} (${window.appState.selectedStudentGroup})`;
+        document.getElementById('activeClassText').innerText = `教室：${window.appState.currentClassId || '-'} (${window.appState.selectedStudentGroup || '-'})`;
       }
 
       renderActiveView();
@@ -1097,14 +1180,13 @@
       document.getElementById(modalId).classList.add('hidden');
     }
 
-    /* 指令 2: 點選教師權限登入後，密碼欄位清空不自行輸入內容 */
     function openTeacherAuthModal() {
       if (window.appState.isTeacherAuthenticated) {
         switchView('teacher');
       } else {
         const pwdInput = document.getElementById('teacherAuthPassword');
         if (pwdInput) {
-          pwdInput.value = ''; // 確保點擊後欄位為空，只出現提示詞
+          pwdInput.value = '';
         }
         document.getElementById('modalTeacherAuth').classList.remove('hidden');
         if (pwdInput) pwdInput.focus();
@@ -1210,6 +1292,11 @@
         window.appState.currentClassId = inputId;
         window.appState.classData = classObj;
         window.appState.selectedStudentGroup = selectedGrp;
+
+        if (window.setupClassroomRealtimeSync) {
+          window.setupClassroomRealtimeSync(inputId);
+        }
+
         closeModal('modalStudentClass');
         showToast(`🎒 成功進入 ${inputId} 教室 - ${selectedGrp}`, 'success');
         switchView('student');
@@ -1222,19 +1309,48 @@
     let redGridCountdownVal = 30;
     let countdownTimer = null;
 
-    function openRedGridModal() {
-      const rawUrl = window.appState.classData.sheetUrl;
-      const embedUrl = getEmbeddableGoogleSheetUrl(rawUrl);
+    async function queryRedGridByClassId() {
+      const inputId = document.getElementById('redGridInputClassId').value.trim().toUpperCase();
       const iframe = document.getElementById('redGridIframe');
-      
-      if (embedUrl) {
-        iframe.src = embedUrl;
-      } else {
-        iframe.srcdoc = `<div style="display:flex;height:100%;align-items:center;justify-content:center;font-family:sans-serif;color:#64748b;font-weight:bold;">尚未設定 Google 試算表嵌入網址，請先由教師進行設定。</div>`;
+
+      if (!inputId) {
+        showToast('⚠️ 請輸入教室編號！', 'error');
+        iframe.srcdoc = `<div style="display:flex;height:100%;align-items:center;justify-content:center;font-family:sans-serif;color:#64748b;font-weight:bold;padding:20px;text-align:center;">⚠️ 請在上方輸入教室編號後點擊「查詢」。</div>`;
+        return;
       }
 
-      document.getElementById('modalRedGrid').classList.remove('hidden');
+      let classObj = window.appState.savedClassrooms ? window.appState.savedClassrooms[inputId] : null;
 
+      if (!classObj && window.appState.db) {
+        try {
+          const publicDocRef = doc(window.appState.db, 'artifacts', window.appState.appId, 'public', 'data', 'public_classrooms', inputId);
+          const snap = await getDoc(publicDocRef);
+          if (snap.exists()) {
+            classObj = snap.data();
+          }
+        } catch(e) {
+          console.error("Error fetching public classroom for Red Grid:", e);
+        }
+      }
+
+      if (classObj && classObj.sheetUrl) {
+        const embedUrl = getEmbeddableGoogleSheetUrl(classObj.sheetUrl);
+        window.appState.activeRedGridUrl = embedUrl;
+        iframe.src = embedUrl;
+        showToast(`📊 成功載入教室【${inputId}】之紅格子試算表！`, 'success');
+        resetRedGridCountdown();
+      } else if (classObj && !classObj.sheetUrl) {
+        window.appState.activeRedGridUrl = null;
+        iframe.srcdoc = `<div style="display:flex;height:100%;align-items:center;justify-content:center;font-family:sans-serif;color:#ef4444;font-weight:bold;padding:20px;text-align:center;">⚠️ 教室【${inputId}】尚未設定 Google 試算表網址，請先由教師登入後進行設定。</div>`;
+        showToast(`⚠️ 教室【${inputId}】尚未設定 Google 試算表網址`, 'warning');
+      } else {
+        window.appState.activeRedGridUrl = null;
+        iframe.srcdoc = `<div style="display:flex;height:100%;align-items:center;justify-content:center;font-family:sans-serif;color:#ef4444;font-weight:bold;padding:20px;text-align:center;">❌ 找不到教室編號【${inputId}】，請確認編號是否正確。</div>`;
+        showToast(`❌ 找不到教室編號【${inputId}】`, 'error');
+      }
+    }
+
+    function resetRedGridCountdown() {
       redGridCountdownVal = 30;
       const cdElem = document.getElementById('redGridCountdown');
       if (cdElem) cdElem.innerText = `30s`;
@@ -1245,15 +1361,31 @@
         if (cdElem) cdElem.innerText = `${redGridCountdownVal}s`;
         if (redGridCountdownVal <= 0) {
           redGridCountdownVal = 30;
-          if (embedUrl && !document.getElementById('modalRedGrid').classList.contains('hidden')) {
-            iframe.src = embedUrl;
+          const iframe = document.getElementById('redGridIframe');
+          if (window.appState.activeRedGridUrl && !document.getElementById('modalRedGrid').classList.contains('hidden')) {
+            iframe.src = window.appState.activeRedGridUrl;
             showToast('🔄 Google 試算表內容已自動更新', 'info');
           }
         }
       }, 1000);
     }
 
-    /* 指令 3: 等比例放大右側隱藏式 QR Code 收合欄位 */
+    function openRedGridModal() {
+      document.getElementById('modalRedGrid').classList.remove('hidden');
+      const inputElem = document.getElementById('redGridInputClassId');
+      const iframe = document.getElementById('redGridIframe');
+      
+      if (window.appState.currentClassId) {
+        inputElem.value = window.appState.currentClassId;
+        queryRedGridByClassId();
+      } else {
+        inputElem.value = '';
+        iframe.srcdoc = `<div style="display:flex;height:100%;align-items:center;justify-content:center;font-family:sans-serif;color:#64748b;font-weight:bold;padding:20px;text-align:center;">🔍 請在上方輸入教室編號後點擊「查詢」按鈕。</div>`;
+      }
+
+      setTimeout(() => inputElem.focus(), 100);
+    }
+
     let isQrDrawerOpen = false;
     function toggleQrDrawer() {
       const drawer = document.getElementById('teacherQrDrawer');
@@ -1268,7 +1400,6 @@
         icon.classList.remove('-rotate-180');
         icon.classList.add('rotate-0');
 
-        // 自動生成高解析度 QR Code (350x350) 供遠距離清楚掃描
         const currentUrl = window.location.origin + window.location.pathname;
         img.src = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(currentUrl)}`;
       } else {
@@ -1279,19 +1410,35 @@
       }
     }
 
+    function saveSheetUrl() {
+      const url = document.getElementById('cfgSheetUrl').value.trim();
+      if (window.appState.classData) {
+        window.appState.classData.sheetUrl = url;
+        if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
+        showToast('✅ Google 試算表網址已儲存', 'success');
+      }
+    }
+
     function renderActiveView() {
       const dateToday = getCSTDateString();
       if (!window.appState.teacherSelectedDate) window.appState.teacherSelectedDate = dateToday;
       if (!window.appState.studentSelectedDate) window.appState.studentSelectedDate = dateToday;
 
-      document.getElementById('teacherAnnounceDate').value = window.appState.teacherSelectedDate;
-      document.getElementById('teacherLeaveFilterDate').value = window.appState.teacherSelectedDate;
-      document.getElementById('teacherViewDate').value = window.appState.teacherSelectedDate;
-      document.getElementById('studentAnnounceDate').value = window.appState.studentSelectedDate;
+      const tAnnDate = document.getElementById('teacherAnnounceDate');
+      if (tAnnDate) tAnnDate.value = window.appState.teacherSelectedDate;
+
+      const tLeaveDate = document.getElementById('teacherLeaveFilterDate');
+      if (tLeaveDate) tLeaveDate.value = window.appState.teacherSelectedDate;
+
+      const tViewDate = document.getElementById('teacherViewDate');
+      if (tViewDate) tViewDate.value = window.appState.teacherSelectedDate;
+
+      const sAnnDate = document.getElementById('studentAnnounceDate');
+      if (sAnnDate) sAnnDate.value = window.appState.studentSelectedDate;
 
       const sheetInput = document.getElementById('cfgSheetUrl');
       if (sheetInput) {
-        sheetInput.value = window.appState.classData.sheetUrl || '';
+        sheetInput.value = window.appState.classData ? (window.appState.classData.sheetUrl || '') : '';
       }
 
       renderAnnouncements();
@@ -1305,6 +1452,9 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      startCSTClock();
+      if (window.initFirebase) window.initFirebase();
+
       const announceInput = document.getElementById('teacherAnnounceInput');
       if (announceInput) {
         announceInput.addEventListener('keydown', (e) => {
@@ -1327,7 +1477,7 @@
       window.appState.classData.announcements[dateKey] = content;
 
       if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-      showToast(`📢 已儲存 ${window.appState.currentClassId} 教室 [${dateKey}] 之重要公告`, 'success');
+      showToast(`📢 已儲存 ${window.appState.currentClassId || '教室'} [${dateKey}] 之重要公告`, 'success');
       renderAnnouncements();
     }
 
@@ -1346,7 +1496,7 @@
     function renderAnnouncements() {
       const tDate = document.getElementById('teacherAnnounceDate')?.value || window.appState.teacherSelectedDate || getCSTDateString();
       const sDate = document.getElementById('studentAnnounceDate')?.value || window.appState.studentSelectedDate || getCSTDateString();
-      const annMap = window.appState.classData.announcements || {};
+      const annMap = window.appState.classData ? (window.appState.classData.announcements || {}) : {};
 
       const tInput = document.getElementById('teacherAnnounceInput');
       if (tInput) {
@@ -1462,7 +1612,7 @@
     }
 
     function getLeavesForDate(dateStr) {
-      const leaves = window.appState.classData.leaves || [];
+      const leaves = window.appState.classData ? (window.appState.classData.leaves || []) : [];
       const queryDateObj = new Date(dateStr + 'T00:00:00');
       const dayOfWeek = queryDateObj.getDay();
 
@@ -1512,8 +1662,8 @@
               <div class="${bgStyle} border rounded-xl p-2.5 flex items-center justify-between text-xs shadow-sm">
                 <div>
                   <span class="font-bold">${l.student}</span>
-                  <span class="${badgeStyle} text-[10px] px-1.5 py-0.5 rounded ml-1">${l.type}</span>
-                  <p class="text-[11px] opacity-90 mt-0.5">${l.reason}</p>
+                  <span class="${badgeStyle} text-xs px-1.5 py-0.5 rounded ml-1">${l.type}</span>
+                  <p class="text-xs opacity-90 mt-0.5">${l.reason}</p>
                 </div>
                 <button onclick="deleteLeave('${l.id}')" class="text-slate-400 hover:text-rose-600 p-1 transition-colors" title="刪除請假">
                   <i class="fa-solid fa-trash-can"></i>
@@ -1536,7 +1686,7 @@
             return `
               <div class="${bgStyle} border rounded-xl p-2.5 text-xs flex items-center justify-between shadow-sm">
                 <span class="font-bold">${l.student}</span>
-                <span class="${badgeStyle} text-[10px] px-2 py-0.5 rounded-full font-medium">${l.type} - ${l.reason}</span>
+                <span class="${badgeStyle} text-xs px-2 py-0.5 rounded-full font-medium">${l.type} - ${l.reason}</span>
               </div>
             `;
           }).join('');
@@ -1564,7 +1714,12 @@
       if (!container) return;
 
       const curDate = isTeacher ? (window.appState.teacherSelectedDate || getCSTDateString()) : (window.appState.studentSelectedDate || getCSTDateString());
-      let groups = window.appState.classData.groups || [];
+      let groups = window.appState.classData ? (window.appState.classData.groups || []) : [];
+
+      if (groups.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-8 col-span-2">尚無教室組別資料，請先設定教室與學生名單</p>`;
+        return;
+      }
 
       if (!isTeacher) {
         const targetGroup = window.appState.selectedStudentGroup;
@@ -1642,15 +1797,15 @@
 
           if (isLateLeave && !hasAttended) {
             chipClass = 'bg-amber-100/90 border-amber-300 text-amber-900 font-medium shadow-sm hover:bg-amber-200';
-            stateBadge = `<span class="text-[10px] sm:text-[11px] bg-amber-200 text-amber-800 px-1.5 rounded mt-0.5 truncate max-w-full font-medium">晚到(${leaveObj.reason})</span>`;
+            stateBadge = `<span class="text-xs bg-amber-200 text-amber-800 px-1.5 rounded mt-0.5 truncate max-w-full font-medium">晚到(${leaveObj.reason})</span>`;
           } else if (isLeave && !isLateLeave) {
             chipClass = 'bg-rose-50 border-rose-200 text-rose-600 opacity-80';
-            stateBadge = `<span class="text-[10px] sm:text-[11px] bg-rose-200 text-rose-800 px-1.5 rounded mt-0.5 truncate max-w-full font-medium">${leaveObj.reason}</span>`;
+            stateBadge = `<span class="text-xs bg-rose-200 text-rose-800 px-1.5 rounded mt-0.5 truncate max-w-full font-medium">${leaveObj.reason}</span>`;
           }
 
           if (hasAttended) {
             chipClass = 'bg-emerald-50 border-emerald-500 text-emerald-800 shadow-md font-semibold hover:bg-emerald-100';
-            stateBadge = `<span class="text-[10px] sm:text-[11px] text-emerald-600 font-mono font-semibold mt-0.5">${timeStr} 到齊</span>`;
+            stateBadge = `<span class="text-xs text-emerald-600 font-mono font-semibold mt-0.5">${timeStr} 到齊</span>`;
           }
 
           return `
@@ -1674,7 +1829,7 @@
             <span class="flex items-center gap-1.5">
               <i class="fa-solid fa-users text-sky-500"></i> ${group.name}
             </span>
-            <span class="text-[11px] font-medium bg-slate-100 px-2 py-0.5 rounded-full text-slate-500">
+            <span class="text-xs font-medium bg-slate-100 px-2 py-0.5 rounded-full text-slate-500">
               到齊：${checkedStudents.length} / ${group.students.length} 人
             </span>
           </div>
@@ -1684,7 +1839,7 @@
               <div class="hexagon ${isCompleted ? 'hexagon-completed' : ''}"></div>
               <div class="relative z-10 text-white text-center font-bold px-2 pointer-events-none">
                 <span class="block text-sm font-fun">${group.name}</span>
-                ${isCompleted ? '<span class="text-[10px] bg-emerald-700/80 text-emerald-100 px-1.5 py-0.5 rounded-full mt-1 inline-block animate-pulse">🎉 全組到齊!</span>' : '<span class="text-[10px] opacity-80">討論桌</span>'}
+                ${isCompleted ? '<span class="text-xs bg-emerald-700/80 text-emerald-100 px-1.5 py-0.5 rounded-full mt-1 inline-block animate-pulse">🎉 全組到齊!</span>' : '<span class="text-xs opacity-80">討論桌</span>'}
               </div>
             </div>
 
@@ -1777,11 +1932,18 @@
       cbs.forEach(cb => cb.checked = !allChecked);
     }
 
+    function openTardyModal() {
+      populateTardyGroupOptions();
+      renderActiveTardyRulesList();
+      renderTardyLogs();
+      document.getElementById('modalTardy').classList.remove('hidden');
+    }
+
     function populateTardyGroupOptions() {
       const select = document.getElementById('tardyBatchTargetGroup');
       if (!select) return;
       select.innerHTML = '<option value="ALL">全班所有組別</option>';
-      const groups = window.appState.classData.groups || [];
+      const groups = window.appState.classData ? (window.appState.classData.groups || []) : [];
       groups.forEach(g => {
         const opt = document.createElement('option');
         opt.value = g.name;
@@ -1839,7 +2001,7 @@
     function renderActiveTardyRulesList() {
       const container = document.getElementById('activeTardyRulesList');
       const countBadge = document.getElementById('activeRuleCountBadge');
-      const rules = window.appState.classData.tardyRulesList || [];
+      const rules = window.appState.classData ? (window.appState.classData.tardyRulesList || []) : [];
 
       if (countBadge) countBadge.innerText = `${rules.length} 條規則`;
       if (!container) return;
@@ -1850,8 +2012,8 @@
       }
 
       container.innerHTML = rules.map(r => {
-        const daysBadges = r.days.map(d => `<span class="bg-amber-100 text-amber-800 text-[10px] px-1 rounded font-semibold">${WEEKDAY_NAMES[d].replace('星期', '週')}</span>`).join(' ');
-        const targetBadge = r.targetGroup === 'ALL' ? '<span class="bg-purple-100 text-purple-700 text-[10px] px-1.5 py-0.5 rounded font-bold">全班</span>' : `<span class="bg-sky-100 text-sky-700 text-[10px] px-1.5 py-0.5 rounded font-bold">${r.targetGroup}</span>`;
+        const daysBadges = r.days.map(d => `<span class="bg-amber-100 text-amber-800 text-xs px-1 rounded font-semibold">${WEEKDAY_NAMES[d].replace('星期', '週')}</span>`).join(' ');
+        const targetBadge = r.targetGroup === 'ALL' ? '<span class="bg-purple-100 text-purple-700 text-xs px-1.5 py-0.5 rounded font-bold">全班</span>' : `<span class="bg-sky-100 text-sky-700 text-xs px-1.5 py-0.5 rounded font-bold">${r.targetGroup}</span>`;
 
         return `
           <div class="bg-white border border-slate-200/80 rounded-xl p-2.5 flex items-center justify-between text-xs shadow-sm hover:border-amber-300 transition-colors">
@@ -1862,7 +2024,7 @@
                 <span class="font-mono text-amber-700 font-bold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/60">${r.time}</span>
               </div>
               <div class="flex items-center gap-1">
-                <span class="text-[10px] text-slate-400">適用：</span>
+                <span class="text-xs text-slate-400">適用：</span>
                 ${daysBadges}
               </div>
             </div>
@@ -1875,7 +2037,7 @@
     }
 
     function clearTardyLogs() {
-      window.appState.classData.tardyLogs = [];
+      if (window.appState.classData) window.appState.classData.tardyLogs = [];
       if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
       renderTardyLogs();
       showToast('已清空遲到紀錄', 'info');
@@ -1883,22 +2045,22 @@
 
     function renderTardyLogs() {
       const container = document.getElementById('tardyLogsContainer');
-      const logs = window.appState.classData.tardyLogs || [];
+      const logs = window.appState.classData ? (window.appState.classData.tardyLogs || []) : [];
       if (!container) return;
 
       if (logs.length === 0) {
         container.innerHTML = `<p class="text-slate-400 text-center py-2 text-xs">目前無遲到紀錄</p>`;
       } else {
         container.innerHTML = logs.map(l => `
-          <div class="text-[11px] text-slate-700 border-b border-slate-100 pb-1.5 pt-1 flex justify-between items-center">
+          <div class="text-xs text-slate-700 border-b border-slate-100 pb-1.5 pt-1 flex justify-between items-center">
             <div>
               <span class="font-bold text-slate-800">${l.student}</span>
-              <span class="text-[10px] text-slate-500 ml-1">(${l.group || '資優班'} · ${l.dayName || ''})</span>
-              <p class="text-[10px] text-slate-400 truncate max-w-[220px]">${l.ruleDetails || '遲到紀錄'}</p>
+              <span class="text-xs text-slate-500 ml-1">(${l.group || '資優班'} · ${l.dayName || ''})</span>
+              <p class="text-xs text-slate-400 truncate max-w-[220px]">${l.ruleDetails || '遲到紀錄'}</p>
             </div>
             <div class="text-right">
               <span class="text-amber-700 font-mono font-bold bg-amber-100 px-1.5 py-0.5 rounded">${l.time}</span>
-              <span class="text-[9px] text-slate-400 block mt-0.5">${l.date}</span>
+              <span class="text-xs text-slate-400 block mt-0.5">${l.date}</span>
             </div>
           </div>
         `).join('');
@@ -1924,8 +2086,8 @@
     }
 
     function renderFirstPlaceStats() {
-      const counts = window.appState.classData.firstPlaceCounts || {};
-      const groups = window.appState.classData.groups || [];
+      const counts = window.appState.classData ? (window.appState.classData.firstPlaceCounts || {}) : {};
+      const groups = window.appState.classData ? (window.appState.classData.groups || []) : [];
 
       const teacherContainer = document.getElementById('teacherFirstPlaceStats');
       const studentContainer = document.getElementById('studentFirstPlaceStats');
@@ -1938,7 +2100,7 @@
 
       const html = groups.map(g => {
         const cnt = counts[g.name] || 0;
-        return `<span class="bg-white border border-amber-200 px-2 py-0.5 rounded-lg text-[11px] font-bold text-slate-700 shadow-xs shrink-0">${g.name}：<span class="text-amber-600 font-mono">${cnt}</span> 次</span>`;
+        return `<span class="bg-white border border-amber-200 px-2 py-0.5 rounded-lg text-xs font-bold text-slate-700 shadow-xs shrink-0">${g.name}：<span class="text-amber-600 font-mono">${cnt}</span> 次</span>`;
       }).join('');
 
       if (teacherContainer) teacherContainer.innerHTML = html;
@@ -2023,37 +2185,40 @@
       if (parsedGroups.length === 0 && rawStudents.length > 0) {
         const stdList = rawStudents.split(/[,，、]/).map(s => s.trim()).filter(s => s.length > 0);
         parsedGroups.push({ name: '第一組', students: stdList });
-      } else if (parsedGroups.length === 0) {
-        parsedGroups.push({ name: '第一組', students: ['小明', '小華', '小美', '阿強'] });
       }
 
       window.appState.currentClassId = cid;
       
+      const existingData = window.appState.savedClassrooms ? (window.appState.savedClassrooms[cid] || {}) : {};
+
       const newClassData = {
         classId: cid,
         description: desc,
-        sheetUrl: window.appState.classData.sheetUrl || '',
-        firstPlaceCounts: window.appState.classData.firstPlaceCounts || {},
-        firstPlaceHistory: window.appState.classData.firstPlaceHistory || {},
-        tardyRulesList: window.appState.classData.tardyRulesList || [],
-        tardyLogs: window.appState.classData.tardyLogs || [],
+        sheetUrl: existingData.sheetUrl || '',
+        firstPlaceCounts: existingData.firstPlaceCounts || {},
+        firstPlaceHistory: existingData.firstPlaceHistory || {},
+        tardyRulesList: existingData.tardyRulesList || [],
+        tardyLogs: existingData.tardyLogs || [],
         groups: parsedGroups,
-        announcements: window.appState.classData.announcements || {},
-        leaves: window.appState.classData.leaves || [],
-        attendance: window.appState.classData.attendance || {},
-        completedGroups: window.appState.classData.completedGroups || {}
+        announcements: existingData.announcements || {},
+        leaves: existingData.leaves || [],
+        attendance: existingData.attendance || {},
+        completedGroups: existingData.completedGroups || {}
       };
 
       window.appState.classData = newClassData;
       if (!window.appState.savedClassrooms) window.appState.savedClassrooms = {};
       window.appState.savedClassrooms[cid] = newClassData;
 
+      if (window.setupClassroomRealtimeSync) {
+        window.setupClassroomRealtimeSync(cid);
+      }
+
       if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
       showToast(`✅ 教室 ${cid} 設定已成功儲存！`, 'success');
       renderActiveView();
     }
 
-    /* 指令 1: 渲染已建立教室列表，並提供個別刪除功能 */
     function renderClassroomList() {
       const container = document.getElementById('classroomListContainer');
       if (!container) return;
@@ -2062,14 +2227,7 @@
       const keys = Object.keys(savedMap);
 
       if (keys.length === 0) {
-        const currentId = window.appState.classData.classId || 'ER101';
-        const currentDesc = window.appState.classData.description || '預設教室';
-        container.innerHTML = `
-          <div onclick="switchClassroom('${currentId}')" class="p-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-xs text-purple-800 cursor-pointer flex items-center justify-between transition-colors shadow-sm">
-            <span class="font-bold font-mono">${currentId}</span>
-            <span class="text-[11px] text-purple-600">${currentDesc}</span>
-          </div>
-        `;
+        container.innerHTML = `<p class="text-xs text-slate-400 p-3 text-center">目前尚無已建立的教室資料</p>`;
         return;
       }
 
@@ -2080,7 +2238,7 @@
           <div onclick="switchClassroom('${k}')" class="p-2.5 rounded-xl ${isCurrent ? 'bg-purple-100 border-purple-300 font-bold ring-1 ring-purple-400' : 'bg-purple-50/70 hover:bg-purple-100 border-purple-200'} border text-xs text-purple-800 cursor-pointer flex items-center justify-between transition-colors shadow-sm group">
             <div class="flex items-center gap-2 truncate">
               <span class="font-bold font-mono text-sm">${k}</span>
-              <span class="text-[11px] text-purple-600 truncate max-w-[100px]">${item.description || '無備註'}</span>
+              <span class="text-xs text-purple-600 truncate max-w-[100px]">${item.description || '無備註'}</span>
             </div>
             <button onclick="deleteClassroom('${k}', event)" class="text-slate-400 hover:text-rose-600 hover:bg-rose-100 p-1.5 rounded-lg transition-colors text-xs shrink-0" title="刪除教室 [${k}] 所有資料">
               <i class="fa-solid fa-trash-can"></i>
@@ -2090,49 +2248,35 @@
       }).join('');
     }
 
-    /* 指令 1: 按下刪除鍵刪除該教室所有資料 */
     function deleteClassroom(cid, event) {
       if (event) event.stopPropagation();
 
-      if (!confirm(`⚠️ 確定要刪除教室【${cid}】的所有資料嗎？\n此動作將一併刪除該教室的座位、公告、請假與點名紀錄且無法復原！`)) {
-        return;
-      }
+      if (!confirm(`⚠️ 確定要刪除教室【${cid}】的所有資料嗎？`)) return;
 
-      if (window.appState.savedClassrooms && window.appState.savedClassrooms[cid]) {
+      if (window.appState.savedClassrooms) {
         delete window.appState.savedClassrooms[cid];
       }
 
       if (window.appState.currentClassId === cid) {
-        const remainingKeys = Object.keys(window.appState.savedClassrooms || {});
-        if (remainingKeys.length > 0) {
-          window.appState.currentClassId = remainingKeys[0];
-          window.appState.classData = window.appState.savedClassrooms[remainingKeys[0]];
-        } else {
-          const defaultId = 'ER101';
-          window.appState.currentClassId = defaultId;
-          window.appState.classData = {
-            classId: defaultId,
-            description: '資優班綜合課程',
-            sheetUrl: '',
-            firstPlaceCounts: {},
-            firstPlaceHistory: {},
-            tardyRulesList: [],
-            tardyLogs: [],
-            groups: [
-              { name: '第一組', students: ['小明', '小華', '小美', '阿強'] },
-              { name: '第二組', students: ['阿傑', '小麗', '阿豪', '雅婷'] }
-            ],
-            announcements: {},
-            leaves: [],
-            attendance: {},
-            completedGroups: {}
-          };
-          window.appState.savedClassrooms[defaultId] = window.appState.classData;
-        }
+        window.appState.currentClassId = '';
+        window.appState.classData = {
+          classId: '',
+          description: '',
+          sheetUrl: '',
+          firstPlaceCounts: {},
+          firstPlaceHistory: {},
+          tardyRulesList: [],
+          tardyLogs: [],
+          groups: [],
+          announcements: {},
+          leaves: [],
+          attendance: {},
+          completedGroups: {}
+        };
       }
 
       if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-      showToast(`🗑️ 已成功刪除教室【${cid}】的所有資料`, 'info');
+      showToast(`🗑️ 已刪除教室【${cid}】`, 'info');
       renderActiveView();
     }
 
@@ -2141,54 +2285,14 @@
         window.appState.currentClassId = cid;
         window.appState.classData = window.appState.savedClassrooms[cid];
         
-        document.getElementById('cfgClassId').value = cid;
-        onClassIdInputChange();
+        if (window.setupClassroomRealtimeSync) {
+          window.setupClassroomRealtimeSync(cid);
+        }
 
-        showToast(`已載入教室 ${cid}`, 'info');
+        showToast(`已切換至教室【${cid}】`, 'success');
         renderActiveView();
       }
     }
-
-    function saveSheetUrl() {
-      const rawUrl = document.getElementById('cfgSheetUrl').value.trim();
-      if (!rawUrl) {
-        showToast('⚠️ 請輸入有效的 Google 試算表網址', 'error');
-        return;
-      }
-      const formattedUrl = getEmbeddableGoogleSheetUrl(rawUrl);
-      window.appState.classData.sheetUrl = formattedUrl;
-      document.getElementById('cfgSheetUrl').value = formattedUrl;
-
-      if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-      showToast('📊 Google 試算表嵌入網址已成功儲存與更新！', 'success');
-    }
-
-    function openTardyModal() {
-      renderActiveTardyRulesList();
-      renderTardyLogs();
-      populateTardyGroupOptions();
-      document.getElementById('modalTardy').classList.remove('hidden');
-    }
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        if (!document.getElementById('modalTeacherAuth').classList.contains('hidden')) {
-          verifyTeacherPassword();
-        } else if (!document.getElementById('modalStudentClass').classList.contains('hidden')) {
-          enterStudentClassroom();
-        } else if (!document.getElementById('modalLeaveForm').classList.contains('hidden')) {
-          if (document.activeElement.tagName !== 'TEXTAREA') {
-            submitLeaveForm();
-          }
-        }
-      }
-    });
-
-    window.onload = function() {
-      startCSTClock();
-      if (window.initFirebase) window.initFirebase();
-      renderActiveView();
-    };
   </script>
 </body>
 </html>
