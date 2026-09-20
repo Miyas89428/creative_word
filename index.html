@@ -3,2295 +3,973 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🏫 二重國小資優班 課程點名系統</title>
-
-  <!-- Tailwind CSS CDN -->
+  <title>奇藝工坊 - 漢字造字與說文解字平台</title>
+  
+  <!-- Tailwind CSS for utility styling -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons CDN -->
+  
+  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"BiauKai"', '"DFKai-SB"', '"標楷體"', 'KaiTi', 'serif'],
-            fun: ['"BiauKai"', '"DFKai-SB"', '"標楷體"', 'KaiTi', 'serif']
-          },
-          colors: {
-            pastel: {
-              mint: '#E6F4F1',
-              mintDark: '#2D6A4F',
-              sky: '#E0F2FE',
-              skyDark: '#0284C7',
-              peach: '#FFEDD5',
-              peachDark: '#EA580C',
-              purple: '#F3E8FF',
-              purpleDark: '#7E22CE',
-              rose: '#FFE4E6',
-              roseDark: '#E11D48',
-              amber: '#FEF3C7',
-              amberDark: '#D97706'
-            }
-          }
-        }
-      }
-    }
-  </script>
+  
+  <!-- html2canvas for PNG Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
-    /* 全站字體按比例放大（提升至 130%）與標楷體設定 */
-    html {
-      font-size: 130%;
+    /* 全頁字體強制設定為標楷體 */
+    * {
+      font-family: "標楷體", "DFKai-SB", "BiauKai", "KaiTi", serif !important;
+      box-sizing: border-box;
+      user-select: none;
     }
 
-    body, input, select, textarea, button, h1, h2, h3, h4, h5, h6 {
-      font-family: "BiauKai", "DFKai-SB", "標楷體", "KaiTi", serif !important;
-    }
-
-    body {
-      background: linear-gradient(135deg, #F0FDF4 0%, #E0F2FE 50%, #FAF5FF 100%);
-      min-height: 100vh;
-    }
-
-    /* 萬年曆：工具列頂部按鈕 */
-    input[type="date"]:not(.form-date-input) {
-      width: 2.25rem !important;
-      height: 2.25rem !important;
-      padding: 0 !important;
-      color: transparent !important;
-      background-color: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    input[type="date"]:not(.form-date-input)::-webkit-datetime-edit,
-    input[type="date"]:not(.form-date-input)::-webkit-datetime-edit-fields-wrapper,
-    input[type="date"]:not(.form-date-input)::-webkit-datetime-edit-text,
-    input[type="date"]:not(.form-date-input)::-webkit-datetime-edit-month-field,
-    input[type="date"]:not(.form-date-input)::-webkit-datetime-edit-day-field,
-    input[type="date"]:not(.form-date-input)::-webkit-datetime-edit-year-field,
-    input[type="date"]:not(.form-date-input)::-webkit-inner-spin-button,
-    input[type="date"]:not(.form-date-input)::-webkit-clear-button {
-      display: none !important;
-      -webkit-appearance: none !important;
-      opacity: 0 !important;
-    }
-
-    input[type="date"]:not(.form-date-input)::-webkit-calendar-picker-indicator {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+    /* 網頁主體背景與視窗隱藏溢出，達成整體等比縮放 */
+    body, html {
       margin: 0;
       padding: 0;
-      opacity: 1;
-      cursor: pointer;
-      background-position: center;
-      background-size: 1.2rem;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #2b1d14; /* 沉穩深咖啡色外框 */ 
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    /* 請假單專用萬年曆日期欄位 */
-    input[type="date"].form-date-input {
-      width: 100% !important;
-      height: 2.5rem !important;
-      padding: 0.5rem 2.5rem 0.5rem 0.75rem !important;
-      color: #1e293b !important;
-      background-color: #ffffff !important;
-      border: 1px solid #cbd5e1 !important;
-      border-radius: 0.75rem !important;
-      cursor: pointer;
-      display: block !important;
-      font-size: 0.875rem !important;
-      line-height: 1.25rem !important;
-      position: relative !important;
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    input[type="date"].form-date-input:focus {
-      border-color: #fb7185 !important;
-      box-shadow: 0 0 0 2px rgba(251, 113, 133, 0.2) !important;
-    }
-
-    input[type="date"].form-date-input::-webkit-datetime-edit,
-    input[type="date"].form-date-input::-webkit-datetime-edit-fields-wrapper,
-    input[type="date"].form-date-input::-webkit-datetime-edit-text,
-    input[type="date"].form-date-input::-webkit-datetime-edit-month-field,
-    input[type="date"].form-date-input::-webkit-datetime-edit-day-field,
-    input[type="date"].form-date-input::-webkit-datetime-edit-year-field {
-      display: inline-block !important;
-      -webkit-appearance: auto !important;
-      opacity: 1 !important;
-      color: #1e293b !important;
-    }
-
-    input[type="date"].form-date-input::-webkit-calendar-picker-indicator {
-      position: absolute !important;
-      right: 0.75rem !important;
-      top: 50% !important;
-      left: auto !important;
-      transform: translateY(-50%) !important;
-      width: 1.25rem !important;
-      height: 1.25rem !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      opacity: 0.6 !important;
-      cursor: pointer !important;
-      background-position: center !important;
-      background-size: contain !important;
-      transition: opacity 0.2s;
-    }
-
-    input[type="date"].form-date-input::-webkit-calendar-picker-indicator:hover {
-      opacity: 1 !important;
-    }
-
-    /* 六角形桌位與環形佈局 */
-    .hexagon-container {
+    /* 等比縮放主要畫布 (1920 x 1080 基準解析度) */
+    #app-viewport {
+      width: 1920px;
+      height: 1080px;
+      background-color: #f7f3ed; /* 溫潤宣紙咖啡白 */
       position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 125px;
-      height: 125px;
+      transform-origin: center center;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    /* 注音田字格容器 (典藏咖啡色系圖片樣式) */
+    .zhuyin-tianzige-frame {
+      display: flex;
+      border: 4px solid #7f5539;
+      background-color: #fdfbf7;
+      box-shadow: 0 8px 20px rgba(61, 35, 20, 0.15);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* 主田字格區 (正方形) */
+    .tianzige-square {
+      position: relative;
+      background-color: #fdfbf7;
+      border-right: 4px solid #7f5539;
+      overflow: hidden;
+    }
+
+    /* 右側注音直欄區 */
+    .zhuyin-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #f9f4ec;
+      color: #5c3d24;
+      user-select: none;
+      padding: 4px 0;
+    }
+
+    /* 繁體中文注音符號正統直排單組容器 */
+    .zhuyin-syllable {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      margin: 4px 0;
+      line-height: 1;
+    }
+
+    /* 可變形造字物件樣式 */
+    .transform-item {
+      position: absolute;
+      cursor: move;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      line-height: 1;
+      color: #3d2314;
+      font-weight: bold;
+      border: 1px dashed transparent;
+      transition: border-color 0.1s ease;
+    }
+    .transform-item span {
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 10;
-    }
-
-    .hexagon {
-      position: absolute;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #38BDF8, #0284C7);
-      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 10px 25px rgba(2, 132, 199, 0.25);
+      line-height: 1;
+      pointer-events: none;
+      transform-origin: center center;
+      white-space: nowrap;
+    }
+    .transform-item.selected {
+      border-color: #8c52ff;
+      background-color: rgba(140, 82, 255, 0.08);
     }
 
-    .hexagon-completed {
-      background: linear-gradient(135deg, #34D399, #059669) !important;
-      animation: pulse-glow 2s infinite;
+    /* 編輯控制點 */
+    .resize-handle {
+      width: 10px;
+      height: 10px;
+      background-color: #8c52ff;
+      border: 1px solid #ffffff;
+      position: absolute;
+      display: none;
+      z-index: 20;
+      border-radius: 2px;
+    }
+    .transform-item.selected .resize-handle {
+      display: block;
     }
 
-    @keyframes pulse-glow {
-      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 12px rgba(52, 211, 153, 0.8)); }
-      50% { transform: scale(1.06); filter: drop-shadow(0 0 24px rgba(52, 211, 153, 1)); }
+    /* 四個角控制點 */
+    .handle-nw { top: -5px; left: -5px; cursor: nw-resize; }
+    .handle-ne { top: -5px; right: -5px; cursor: ne-resize; }
+    .handle-sw { bottom: -5px; left: -5px; cursor: sw-resize; }
+    .handle-se { bottom: -5px; right: -5px; cursor: se-resize; }
+
+    /* 四條邊中點控制點 */
+    .handle-n { top: -5px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+    .handle-s { bottom: -5px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+    .handle-w { top: 50%; left: -5px; transform: translateY(-50%); cursor: w-resize; }
+    .handle-e { top: 50%; right: -5px; transform: translateY(-50%); cursor: e-resize; }
+
+    /* 360度旋轉控制點 */
+    .handle-rotate {
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      cursor: grab;
+      background-color: #8c6239;
+      border-radius: 50%;
+      width: 12px;
+      height: 12px;
+      border: 1px solid #ffffff;
     }
 
-    .circular-table-area {
+    /* A4 比例畫布 (210mm x 297mm 比例) */
+    .a4-paper {
+      width: 580px;
+      height: 820px;
+      background-color: #fffdf9;
+      box-shadow: 0 10px 25px rgba(61, 35, 20, 0.15);
+      border: 2px solid #8c6239;
       position: relative;
-      width: 100%;
-      max-width: 480px;
-      height: 430px;
-      margin: 0 auto;
     }
 
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+    /* 自訂通知 Toast */
+    #toast {
+      transition: all 0.3s ease;
+      transform: translateY(100px);
+      opacity: 0;
     }
-    ::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.03);
-      border-radius: 10px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(0,0,0,0.15);
-      border-radius: 10px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(0,0,0,0.25);
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
     }
   </style>
 </head>
-<body class="text-slate-800 font-sans antialiased flex flex-col min-h-screen selection:bg-emerald-200">
+<body>
 
-  <!-- Top Navigation Header -->
-  <header class="bg-white/85 backdrop-blur-md sticky top-0 z-30 border-b border-slate-200/60 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('home')">
-        <div class="bg-emerald-500 text-white w-10 h-10 rounded-2xl flex items-center justify-center text-xl shadow-md transform hover:rotate-6 transition-transform">
-          🏫
-        </div>
-        <div>
-          <h1 class="font-fun font-bold text-lg sm:text-xl text-slate-800 tracking-wide flex items-center gap-2">
-            二重國小資優班 <span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-sans font-medium">點名系統</span>
-          </h1>
-          <p class="text-xs text-slate-500 hidden sm:block">Erchong Elementary Gifted Class Attendance System</p>
-        </div>
-      </div>
-
-      <!-- Realtime CST Clock & Active Class Badge -->
-      <div class="flex items-center space-x-2 sm:space-x-4">
-        <div id="activeClassBadge" class="hidden items-center gap-2 bg-sky-50 border border-sky-200 text-sky-700 px-3 py-1 rounded-xl text-xs sm:text-sm font-medium">
-          <i class="fa-solid fa-door-open text-sky-500"></i>
-          <span id="activeClassText">教室：-</span>
-        </div>
-
-        <div class="bg-slate-100/80 px-3 py-1.5 rounded-xl border border-slate-200/60 flex items-center gap-2 text-xs sm:text-sm font-mono text-slate-700 font-semibold shadow-inner">
-          <i class="fa-regular fa-clock text-emerald-600 animate-pulse"></i>
-          <span id="cstClock">CST 00:00:00</span>
-        </div>
-
-        <button id="homeBtn" onclick="switchView('home')" class="hidden bg-slate-100 hover:bg-slate-200 text-slate-600 p-2 rounded-xl text-sm transition-colors" title="返回首頁">
-          <i class="fa-solid fa-house"></i>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Notification Toast Container -->
-  <div id="toastContainer" class="fixed top-20 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-
-    <!-- VIEW 1: Home Landing Screen -->
-    <section id="viewHome" class="flex flex-col items-center justify-center py-10 sm:py-16">
-      <div class="text-center max-w-2xl mb-12">
-        <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Welcome</span>
-        <h2 class="text-3xl sm:text-4xl font-fun font-bold text-slate-800 mt-3 mb-4">歡迎來到 資優班課程點名大廳</h2>
-        <p class="text-slate-600 text-sm sm:text-base leading-relaxed">請選擇您的存取身分</p>
-      </div>
-
-      <!-- Main Action Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
-        <!-- Card 1: Teacher Login -->
-        <div onclick="openTeacherAuthModal()" class="group bg-white rounded-3xl p-6 shadow-md hover:shadow-xl border border-emerald-100 hover:border-emerald-300 transition-all cursor-pointer flex flex-col items-center text-center transform hover:-translate-y-1">
-          <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform shadow-sm">
-            🔑
-          </div>
-          <h3 class="font-bold text-lg text-slate-800 mb-2">教師權限登入</h3>
-          <span class="mt-6 text-xs font-semibold text-emerald-600 group-hover:underline flex items-center gap-1">
-            進入管理介面 <i class="fa-solid fa-arrow-right"></i>
-          </span>
-        </div>
-
-        <!-- Card 2: Student Enter Classroom -->
-        <div onclick="openStudentClassModal()" class="group bg-white rounded-3xl p-6 shadow-md hover:shadow-xl border border-sky-100 hover:border-sky-300 transition-all cursor-pointer flex flex-col items-center text-center transform hover:-translate-y-1">
-          <div class="w-16 h-16 bg-sky-100 text-sky-600 rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform shadow-sm">
-            🎒
-          </div>
-          <h3 class="font-bold text-lg text-slate-800 mb-2">進入課程教室</h3>
-          <span class="mt-6 text-xs font-semibold text-sky-600 group-hover:underline flex items-center gap-1">
-            選擇組別點名 <i class="fa-solid fa-arrow-right"></i>
-          </span>
-        </div>
-
-        <!-- Card 3: Query My Red Grid -->
-        <div onclick="openRedGridModal()" class="group bg-white rounded-3xl p-6 shadow-md hover:shadow-xl border border-amber-100 hover:border-amber-300 transition-all cursor-pointer flex flex-col items-center text-center transform hover:-translate-y-1">
-          <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform shadow-sm">
-            📊
-          </div>
-          <h3 class="font-bold text-lg text-slate-800 mb-2">查詢我的紅格子</h3>
-          <span class="mt-6 text-xs font-semibold text-amber-600 group-hover:underline flex items-center gap-1">
-            查看表格數據 <i class="fa-solid fa-arrow-right"></i>
-          </span>
-        </div>
-      </div>
-    </section>
-
-    <!-- VIEW 2: Teacher Management View -->
-    <section id="viewTeacher" class="hidden grid-cols-1 lg:grid-cols-12 gap-6 items-start relative">
-      
-      <!-- Left Column (3 cols in lg) -->
-      <div class="lg:col-span-3 space-y-6">
-        
-        <!-- Announcements & Homework Card -->
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
-              <i class="fa-solid fa-bullhorn text-emerald-500"></i> 重要公告與作業
-            </h3>
-            <input type="date" id="teacherAnnounceDate" onchange="loadAnnouncementForDate()" class="text-xs border border-slate-200 rounded-lg p-1 bg-slate-50 text-slate-600 cursor-pointer">
-          </div>
-          <p class="text-xs text-slate-400 mb-2">💡 按 Enter 鍵自動跳至下一列</p>
-          <textarea id="teacherAnnounceInput" rows="5" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-400 focus:outline-none transition-all resize-y" placeholder="1. 請輸入公告或作業..."></textarea>
-          <button onclick="saveAnnouncement()" class="mt-2 w-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-medium py-2 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1">
-            <i class="fa-solid fa-floppy-disk"></i> 儲存此日公告
-          </button>
-        </div>
-
-        <!-- Today's Leave List Card -->
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
-              <i class="fa-solid fa-user-xmark text-rose-500"></i> 請假/晚到名單
-            </h3>
-            <input type="date" id="teacherLeaveFilterDate" onchange="onTeacherLeaveDateChange()" class="text-xs border border-slate-200 rounded-lg p-1 bg-slate-50 text-slate-600 cursor-pointer">
-          </div>
-
-          <button onclick="openLeaveModal()" class="w-full mb-3 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-semibold py-2 rounded-xl transition-colors flex items-center justify-center gap-1 shadow-sm">
-            <i class="fa-solid fa-pen-to-square"></i> 填寫假單
-          </button>
-
-          <!-- 紀錄列表區塊 -->
-          <div id="teacherLeaveContainer" class="space-y-2 max-h-56 overflow-y-auto pr-1">
-            <p class="text-xs text-slate-400 text-center py-4">今日暫無請假紀錄</p>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Center Column (6 cols in lg) -->
-      <div class="lg:col-span-6 space-y-6">
-        
-        <!-- Top Toolbar & Leaderboard -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex flex-col justify-between gap-3">
-          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 w-full">
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-              <div class="bg-amber-100 text-amber-700 p-2 rounded-xl text-lg shadow-sm">🏆</div>
-              <div>
-                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">全組到齊名次欄</div>
-                <div id="allPresentRankList" class="flex flex-wrap gap-1.5 mt-0.5 text-xs font-medium text-slate-700">
-                  <span class="text-xs text-slate-400 italic">尚無小組全組到齊</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-              <button onclick="saveAttendanceRecord()" class="bg-sky-500 hover:bg-sky-600 text-white text-xs px-3.5 py-2 rounded-xl font-medium shadow-sm transition-all flex items-center gap-1.5">
-                <i class="fa-solid fa-cloud-arrow-up"></i> 儲存點名紀錄
-              </button>
-              <input type="date" id="teacherViewDate" onchange="changeTeacherViewDate()" class="text-xs border border-slate-200 rounded-xl p-2 bg-slate-50 text-slate-700">
-            </div>
-          </div>
-
-          <!-- 第一名累積次數顯示區 -->
-          <div class="border-t border-slate-100 pt-2 flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs text-slate-600">
-            <span class="font-bold text-amber-700 shrink-0 flex items-center gap-1">🥇 第一名累積次數：</span>
-            <div id="teacherFirstPlaceStats" class="flex flex-wrap gap-1.5 font-medium">
-              <span class="text-slate-400 italic">尚無數據</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Seating Map Grid -->
-        <div class="bg-white/80 rounded-3xl p-6 shadow-sm border border-slate-200/80">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="font-bold text-base text-slate-800 flex items-center gap-2">
-              <i class="fa-solid fa-shapes text-sky-500"></i> 小組座位表
-            </h3>
-            <span class="text-xs bg-slate-100 text-slate-500 px-2.5 py-1 rounded-full">點擊姓名完成到班點名</span>
-          </div>
-
-          <div id="teacherSeatingContainer" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Dynamic Groups -->
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Right Column (3 cols in lg) -->
-      <div class="lg:col-span-3 space-y-6">
-        
-        <!-- Classroom Config Sidebar -->
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
-              <i class="fa-solid fa-sliders text-purple-500"></i> 教室設定與管理
-            </h3>
-            <button onclick="toggleNewClassroomForm()" class="bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs px-2.5 py-1 rounded-lg transition-colors font-medium">
-              <i class="fa-solid fa-plus"></i> 新增/編輯
-            </button>
-          </div>
-
-          <!-- Add / Edit Classroom Form -->
-          <div id="classroomForm" class="space-y-3 bg-slate-50 p-3 rounded-xl text-xs">
-            <div>
-              <label class="block font-medium text-slate-600 mb-1">教室編號 *</label>
-              <input type="text" id="cfgClassId" oninput="onClassIdInputChange()" placeholder="例：ER101" class="w-full p-2 border rounded-lg bg-white uppercase font-mono">
-            </div>
-            <div>
-              <label class="block font-medium text-slate-600 mb-1">說明 / 課程名稱</label>
-              <input type="text" id="cfgClassDesc" placeholder="例：四年級數學資優班" class="w-full p-2 border rounded-lg bg-white">
-            </div>
-            <div>
-              <label class="block font-medium text-slate-600 mb-1">組別與學生名單</label>
-              <p class="text-xs text-slate-400 mb-1">組別：學生姓名、學生姓名、學生姓名</p>
-              <textarea id="cfgClassStudents" rows="5" class="w-full p-2 border rounded-lg bg-white font-mono text-xs"></textarea>
-            </div>
-            
-            <button onclick="saveClassroomConfig()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-medium transition-colors shadow-sm">
-              儲存教室設定
-            </button>
-          </div>
-
-          <!-- Classroom List -->
-          <div>
-            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">已建立教室列表</h4>
-            <div id="classroomListContainer" class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-              <!-- Dynamic Classroom items -->
-            </div>
-          </div>
-
-          <!-- Multi-Rule Tardy Settings Button -->
-          <div class="pt-2 border-t border-slate-100">
-            <button onclick="openTardyModal()" class="w-full text-xs bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 py-2.5 rounded-xl transition-colors font-medium flex items-center justify-center gap-1.5 shadow-sm">
-              <i class="fa-solid fa-clock-rotate-left text-amber-600"></i> 遲到紀錄與規則設定
-            </button>
-          </div>
-
-          <!-- Google Spreadsheet URL Sync Config -->
-          <div class="pt-2 border-t border-slate-100 space-y-2">
-            <label class="block font-bold text-xs text-slate-700">Google 試算表嵌入網址</label>
-            <input type="url" id="cfgSheetUrl" placeholder="https://docs.google.com/spreadsheets/d/..." class="w-full text-xs p-2 border rounded-lg">
-            <button onclick="saveSheetUrl()" class="w-full bg-slate-700 hover:bg-slate-800 text-white text-xs py-1.5 rounded-lg transition-colors shadow-sm">
-              儲存試算表網址
-            </button>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- 右側隱藏式 QR CODE 欄位 -->
-      <div id="teacherQrDrawer" class="fixed right-0 top-1/2 -translate-y-1/2 z-40 flex items-center transition-transform duration-300 translate-x-[calc(100%-3rem)]">
-        <button id="qrDrawerToggleBtn" onclick="toggleQrDrawer()" class="bg-emerald-600 hover:bg-emerald-700 text-white w-12 h-36 rounded-l-2xl shadow-2xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all border-l border-t border-b border-white/30 group" title="點擊展開/收合 QR Code">
-          <i id="qrDrawerTriangleIcon" class="fa-solid fa-play text-sm transition-transform duration-300 -rotate-180 group-hover:scale-125"></i>
-          <span class="text-xs font-bold tracking-widest [writing-mode:vertical-lr] select-none">QR CODE</span>
-        </button>
-
-        <div class="bg-white/95 backdrop-blur-md p-6 rounded-l-3xl shadow-2xl border-l border-y border-slate-200/80 w-[360px] flex flex-col items-center text-center">
-          <div class="flex items-center justify-between w-full mb-4 pb-3 border-b border-slate-100">
-            <span class="text-base font-bold text-slate-800 flex items-center gap-2">
-              <i class="fa-solid fa-qrcode text-emerald-600 text-lg"></i> 網頁 QR Code
-            </span>
-            <span class="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-semibold">遠距離清晰掃碼</span>
-          </div>
-          
-          <div class="bg-white p-3.5 rounded-2xl shadow-inner border border-slate-200 mb-4">
-            <img id="qrCodeImg" src="" alt="網站 QR Code" class="w-72 h-72 object-contain rounded-xl">
-          </div>
-          
-          <p class="text-xs text-slate-600 leading-relaxed font-medium">
-            使用手機相機掃描上方 QR Code，即可快速連至本網頁初始畫面開始點名。
-          </p>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- VIEW 3: Student Classroom View -->
-    <section id="viewStudent" class="hidden grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-      
-      <!-- Left Column (4 cols in lg) -->
-      <div class="lg:col-span-4 space-y-6">
-        
-        <!-- Announcements Card -->
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
-          <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
-            <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
-              <i class="fa-solid fa-bullhorn text-emerald-500"></i> 重要公告與本週作業
-            </h3>
-            <input type="date" id="studentAnnounceDate" onchange="loadStudentAnnouncement()" class="text-xs border border-slate-200 rounded-lg p-1 bg-slate-50">
-          </div>
-          <div id="studentAnnounceContent" class="text-xs text-slate-700 whitespace-pre-line leading-relaxed min-h-[100px] bg-slate-50 p-3 rounded-xl border border-slate-100">
-            目前無公告訊息
-          </div>
-        </div>
-
-        <!-- Today's Leave List -->
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
-          <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2 mb-3">
-            <i class="fa-solid fa-user-check text-sky-500"></i> 請假/晚到名單
-          </h3>
-          <div id="studentLeaveContainer" class="space-y-2 max-h-56 overflow-y-auto">
-            <!-- Dynamic leaves -->
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Right Column (8 cols in lg) -->
-      <div class="lg:col-span-8 space-y-6">
-        
-        <!-- Student Seating Map Card -->
-        <div class="bg-white/90 rounded-3xl p-6 shadow-sm border border-slate-200/80">
-          
-          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-100">
-            <div class="shrink-0">
-              <span id="studentGroupTitleBadge" class="bg-sky-100 text-sky-800 text-xs font-bold px-3 py-1 rounded-full">已選擇組別</span>
-              <h3 class="font-bold text-base sm:text-lg text-slate-800 mt-1 whitespace-nowrap">點擊個人姓名條完成點名</h3>
-            </div>
-
-            <!-- Leaderboard -->
-            <div class="bg-amber-50/90 border border-amber-200/60 px-2.5 py-1.5 rounded-xl flex flex-col gap-1 text-xs shadow-sm w-full sm:w-auto shrink max-w-xs">
-              <div class="flex items-center gap-1.5">
-                <span class="font-bold text-amber-700 flex items-center gap-1 shrink-0">🏆 到齊順序：</span>
-                <div id="studentRankList" class="flex gap-1 flex-wrap">
-                  <span class="text-slate-400 italic">尚無組別到齊</span>
-                </div>
-              </div>
-              <div class="border-t border-amber-200/60 pt-1 flex items-center gap-1.5 text-amber-900">
-                <span class="font-bold text-amber-700 shrink-0 flex items-center gap-1">🥇 第一名累積次數：</span>
-                <div id="studentFirstPlaceStats" class="flex flex-wrap gap-1 font-medium">
-                  <span class="text-slate-400 italic">尚無數據</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Dynamic Seating Area -->
-          <div id="studentSeatingContainer" class="flex items-center justify-center min-h-[420px]">
-            <!-- Single group view -->
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
-
-  <!-- MODAL 1: Teacher Password Modal -->
-  <div id="modalTeacherAuth" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 transform transition-all">
-      <div class="text-center mb-5">
-        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-xl mx-auto mb-2 shadow-sm">🔑</div>
-        <h3 class="font-bold text-lg text-slate-800">教師權限驗證</h3>
-        <p class="text-xs text-slate-500 mt-1">請輸入教師管理登入密碼</p>
-      </div>
-      
-      <input type="password" id="teacherAuthPassword" placeholder="請輸入密碼" value="" autocomplete="new-password" class="w-full text-center text-sm p-3 border border-slate-200 rounded-xl mb-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none">
-      
-      <div class="flex gap-2">
-        <button onclick="closeModal('modalTeacherAuth')" class="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs py-2.5 rounded-xl font-medium transition-colors">取消</button>
-        <button onclick="verifyTeacherPassword()" class="w-1/2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs py-2.5 rounded-xl font-medium transition-colors shadow-sm">驗證登入</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL 2: Student Enter Classroom Modal -->
-  <div id="modalStudentClass" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
-      <div class="text-center mb-5">
-        <div class="w-12 h-12 bg-sky-100 text-sky-600 rounded-2xl flex items-center justify-center text-xl mx-auto mb-2 shadow-sm">🎒</div>
-        <h3 class="font-bold text-lg text-slate-800">進入課程教室</h3>
-        <p class="text-xs text-slate-500 mt-1">請點選或輸入教室編號，並選擇您所屬的小組</p>
-      </div>
-
-      <div class="space-y-3 mb-5">
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">點選已儲存的教室編號</label>
-          <select id="studentSelectSavedClass" onchange="onSelectSavedClassroom(this.value)" class="w-full text-xs p-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-sky-400 focus:outline-none font-mono">
-            <option value="">-- 請選擇已知教室 --</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">或手動輸入教室編號 *</label>
-          <input type="text" id="studentInputClassId" placeholder="輸入教室編號 (例：ER101)" oninput="updateStudentGroupDropdown()" class="w-full text-sm p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-400 focus:outline-none uppercase font-mono">
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">選擇小組組別 *</label>
-          <select id="studentSelectGroup" class="w-full text-sm p-3 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-sky-400 focus:outline-none">
-            <option value="">-- 請先選擇或輸入正確教室編號 --</option>
-          </select>
-        </div>
-        <p id="studentClassErrorMsg" class="text-xs text-rose-500 text-center font-medium hidden">⚠️ 請重新確認教室編號</p>
-      </div>
-
-      <div class="flex gap-2">
-        <button onclick="closeModal('modalStudentClass')" class="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs py-2.5 rounded-xl font-medium">取消</button>
-        <button onclick="enterStudentClassroom()" class="w-1/2 bg-sky-500 hover:bg-sky-600 text-white text-xs py-2.5 rounded-xl font-medium shadow-sm">進入教室</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL 3: Leave Application Modal -->
-  <div id="modalLeaveForm" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-        <h3 class="font-bold text-base text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-file-pen text-rose-500"></i> 填寫請假單
-        </h3>
-        <button onclick="closeModal('modalLeaveForm')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <div class="space-y-3 text-xs mb-5">
-        <div>
-          <label class="block font-medium text-slate-600 mb-1">請假方式 / 狀態 <span class="text-rose-500">*</span></label>
-          <select id="leaveType" onchange="onLeaveTypeChange()" class="w-full p-2.5 border rounded-xl bg-white focus:ring-2 focus:ring-rose-400 font-medium">
-            <option value="單次">單次請假</option>
-            <option value="晚到">晚到</option>
-            <option value="週期">週期性請假</option>
-            <option value="區間">區間請假</option>
-          </select>
-        </div>
-
-        <div id="weeklyLeaveDaysBox" class="hidden bg-rose-50/60 p-3 rounded-xl border border-rose-200 space-y-1.5">
-          <label class="block font-bold text-rose-800 mb-1">勾選週期性請假星期 (周一至周五) <span class="text-rose-500">*</span></label>
-          <div class="grid grid-cols-5 gap-1 text-center">
-            <label class="flex flex-col items-center cursor-pointer hover:bg-rose-100 p-1 rounded transition-colors">
-              <span class="text-xs text-slate-600 mb-0.5">週一</span>
-              <input type="checkbox" class="leave-weekday-cb text-rose-600 focus:ring-rose-400 rounded" value="1">
-            </label>
-            <label class="flex flex-col items-center cursor-pointer hover:bg-rose-100 p-1 rounded transition-colors">
-              <span class="text-xs text-slate-600 mb-0.5">週二</span>
-              <input type="checkbox" class="leave-weekday-cb text-rose-600 focus:ring-rose-400 rounded" value="2">
-            </label>
-            <label class="flex flex-col items-center cursor-pointer hover:bg-rose-100 p-1 rounded transition-colors">
-              <span class="text-xs text-slate-600 mb-0.5">週三</span>
-              <input type="checkbox" class="leave-weekday-cb text-rose-600 focus:ring-rose-400 rounded" value="3">
-            </label>
-            <label class="flex flex-col items-center cursor-pointer hover:bg-rose-100 p-1 rounded transition-colors">
-              <span class="text-xs text-slate-600 mb-0.5">週四</span>
-              <input type="checkbox" class="leave-weekday-cb text-rose-600 focus:ring-rose-400 rounded" value="4">
-            </label>
-            <label class="flex flex-col items-center cursor-pointer hover:bg-rose-100 p-1 rounded transition-colors">
-              <span class="text-xs text-slate-600 mb-0.5">週五</span>
-              <input type="checkbox" class="leave-weekday-cb text-rose-600 focus:ring-rose-400 rounded" value="5">
-            </label>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block font-medium text-slate-600 mb-1">開始日期 <span class="text-rose-500">*</span></label>
-            <input type="date" id="leaveStartDate" class="form-date-input">
-          </div>
-          <div>
-            <label id="lblLeaveEndDate" class="block font-medium text-slate-600 mb-1">結束日期 (選填)</label>
-            <input type="date" id="leaveEndDate" class="form-date-input">
-          </div>
-        </div>
-
-        <div>
-          <label class="block font-medium text-slate-600 mb-1">學生姓名 <span class="text-rose-500">*</span></label>
-          <input type="text" id="leaveStudentName" placeholder="請輸入學生姓名" class="w-full p-2.5 border rounded-xl">
-        </div>
-
-        <div>
-          <label class="block font-medium text-slate-600 mb-1">假別 / 晚到事由 <span class="text-rose-500">*</span></label>
-          <input type="text" id="leaveReason" placeholder="例：事假、病假、預計晚到15分鐘" class="w-full p-2.5 border rounded-xl">
-        </div>
-      </div>
-
-      <div class="flex gap-2">
-        <button onclick="closeModal('modalLeaveForm')" class="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 rounded-xl font-medium">取消</button>
-        <button onclick="submitLeaveForm()" class="w-1/2 bg-rose-500 hover:bg-rose-600 text-white py-2.5 rounded-xl font-medium shadow-sm">送出假單</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL 4: Red Grid Modal -->
-  <div id="modalRedGrid" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-6">
-    <div class="bg-white rounded-3xl w-full max-w-5xl h-[88vh] flex flex-col shadow-2xl overflow-hidden border border-slate-100">
-      <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center font-bold text-lg shadow-sm">📊</div>
-          <div>
-            <h3 class="font-bold text-sm text-slate-800">查詢我的紅格子 (唯讀檢視)</h3>
-            <div class="flex items-center gap-2 mt-0.5">
-              <span class="text-xs text-slate-500">每 30 秒系統自動重新整理同步內容</span>
-              <span id="redGridCountdown" class="bg-amber-100 text-amber-800 font-mono text-xs px-2 py-0.5 rounded-full font-bold">30s</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 教室編號查詢輸入框 -->
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-          <input type="text" id="redGridInputClassId" placeholder="請輸入教室編號 (例: ER101)" onkeydown="if(event.key==='Enter') queryRedGridByClassId()" class="w-full sm:w-48 text-xs p-2 border border-slate-300 rounded-xl font-mono uppercase bg-white focus:ring-2 focus:ring-amber-400 focus:outline-none">
-          <button onclick="queryRedGridByClassId()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-2 rounded-xl font-bold shadow-sm transition-colors shrink-0 flex items-center gap-1">
-            <i class="fa-solid fa-magnifying-glass"></i> 查詢
-          </button>
-          <button onclick="closeModal('modalRedGrid')" class="bg-slate-200 hover:bg-slate-300 p-2 rounded-full text-slate-600 text-xs transition-colors">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-      </div>
-
-      <div class="flex-1 bg-slate-100 relative">
-        <iframe id="redGridIframe" class="w-full h-full border-0" src="about:blank"></iframe>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL 5: Multi-Rule Tardy Manager -->
-  <div id="modalTardy" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-6 max-w-xl w-full shadow-2xl border border-slate-100 max-h-[90vh] flex flex-col">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4 flex-shrink-0">
-        <h3 class="font-bold text-base text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-clock-rotate-left text-amber-500"></i> 遲到紀錄與規則設定
-        </h3>
-        <button onclick="closeModal('modalTardy')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <div class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 mb-4">
-        
-        <div class="bg-amber-50/90 border border-amber-200 p-4 rounded-2xl space-y-3 shadow-sm">
-          <div class="flex items-center justify-between">
-            <label class="font-bold text-amber-900 flex items-center gap-1.5 text-xs">
-              <i class="fa-solid fa-plus-circle text-amber-600"></i> 遲到規定週期設定
-            </label>
-            <button type="button" onclick="toggleAllWeekdays()" class="text-xs bg-amber-200/80 hover:bg-amber-300 text-amber-800 px-2 py-0.5 rounded-md font-semibold transition-colors">
-              全選 / 反選星期
-            </button>
-          </div>
-
-          <div class="grid grid-cols-7 gap-1 bg-white p-2.5 rounded-xl border border-amber-200/70">
-            <label class="flex flex-col items-center cursor-pointer hover:bg-amber-50 rounded p-1 transition-colors">
-              <span class="text-xs text-slate-500 mb-0.5">週一</span>
-              <input type="checkbox" class="tardy-day-cb rounded text-amber-600 focus:ring-amber-400" value="1" checked>
-            </label>
-            <label class="flex flex-col items-center cursor-pointer hover:bg-amber-50 rounded p-1 transition-colors">
-              <span class="text-xs text-slate-500 mb-0.5">週二</span>
-              <input type="checkbox" class="tardy-day-cb rounded text-amber-600 focus:ring-amber-400" value="2" checked>
-            </label>
-            <label class="flex flex-col items-center cursor-pointer hover:bg-amber-50 rounded p-1 transition-colors">
-              <span class="text-xs text-slate-500 mb-0.5">週三</span>
-              <input type="checkbox" class="tardy-day-cb rounded text-amber-600 focus:ring-amber-400" value="3" checked>
-            </label>
-            <label class="flex flex-col items-center cursor-pointer hover:bg-amber-50 rounded p-1 transition-colors">
-              <span class="text-xs text-slate-500 mb-0.5">週四</span>
-              <input type="checkbox" class="tardy-day-cb rounded text-amber-600 focus:ring-amber-400" value="4" checked>
-            </label>
-            <label class="flex flex-col items-center cursor-pointer hover:bg-amber-50 rounded p-1 transition-colors">
-              <span class="text-xs text-slate-500 mb-0.5">週五</span>
-              <input type="checkbox" class="tardy-day-cb rounded text-amber-600 focus:ring-amber-400" value="5" checked>
-            </label>
-            <label class="flex flex-col items-center cursor-pointer hover:bg-amber-50 rounded p-1 transition-colors">
-              <span class="text-xs text-slate-500 mb-0.5">週六</span>
-              <input type="checkbox" class="tardy-day-cb rounded text-amber-600 focus:ring-amber-400" value="6">
-            </label>
-            <label class="flex flex-col items-center cursor-pointer hover:bg-amber-50 rounded p-1 transition-colors">
-              <span class="text-xs text-slate-500 mb-0.5">週日</span>
-              <input type="checkbox" class="tardy-day-cb rounded text-amber-600 focus:ring-amber-400" value="0">
-            </label>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <div>
-              <label class="block font-semibold text-amber-900 mb-1">遲到時間設定</label>
-              <input type="time" id="tardyTimeInput" step="1" value="08:15:00" class="w-full p-2 border border-amber-200 rounded-xl bg-white font-mono text-xs focus:ring-2 focus:ring-amber-400">
-            </div>
-            <div>
-              <label class="block font-semibold text-amber-900 mb-1">適用對象組別</label>
-              <select id="tardyBatchTargetGroup" class="w-full p-2 border border-amber-200 rounded-xl bg-white font-medium text-xs focus:ring-2 focus:ring-amber-400">
-                <option value="ALL">全班所有組別</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-semibold text-amber-900 mb-1">規則標籤 / 備註</label>
-              <input type="text" id="tardyRuleNameInput" placeholder="例：周一領導課遲到門檻" class="w-full p-2 border border-amber-200 rounded-xl bg-white text-xs">
-            </div>
-          </div>
-
-          <button onclick="addNewTardyRuleEntry()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-1.5">
-            <i class="fa-solid fa-plus"></i> 新增此遲到規則
-          </button>
-        </div>
-
-        <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="font-bold text-slate-800 flex items-center gap-1">
-              <i class="fa-solid fa-list-check text-sky-500"></i> 已生效遲到規則列表
-            </label>
-            <span id="activeRuleCountBadge" class="text-xs bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full font-bold">0 條規則</span>
-          </div>
-
-          <div id="activeTardyRulesList" class="space-y-2 bg-slate-50 border border-slate-200 rounded-2xl p-3 max-h-48 overflow-y-auto">
-            <p class="text-slate-400 text-center py-3">尚無設定任何遲到規則</p>
-          </div>
-        </div>
-
-        <div>
-          <div class="flex items-center justify-between mb-1">
-            <label class="font-bold text-slate-800 flex items-center gap-1">
-              <i class="fa-solid fa-clipboard-list text-rose-500"></i> 學生遲到紀錄明細 (自動觸發登錄)
-            </label>
-            <button onclick="clearTardyLogs()" class="text-xs text-rose-500 hover:underline">清空紀錄</button>
-          </div>
-          <div id="tardyLogsContainer" class="bg-slate-50 border border-slate-200 rounded-2xl p-3 max-h-36 overflow-y-auto space-y-1.5">
-            <p class="text-slate-400 text-center py-2">目前無遲到紀錄</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex gap-2 flex-shrink-0 pt-2 border-t border-slate-100">
-        <button onclick="closeModal('modalTardy')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 rounded-xl font-medium text-xs">關閉設定視窗</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 同網域/同裝置多分頁廣播通道 (Requirement 2) -->
-  <script>
-    const localSyncChannel = new BroadcastChannel('erchong_attendance_local_channel');
+  <div id="app-viewport">
     
-    localSyncChannel.onmessage = (event) => {
-      if (event.data && event.data.type === 'CLASSROOM_DATA_UPDATED') {
-        const { classId, classroomsMap } = event.data;
-        window.appState.savedClassrooms = classroomsMap || window.appState.savedClassrooms;
+    <!-- 頂部標題列 (典藏咖啡色系風格) -->
+    <header class="w-full h-20 bg-[#4a3222] text-[#f7f3ed] px-8 flex items-center justify-between border-b-4 border-[#785135]">
+      <div class="flex items-center space-x-4">
+        <i class="fa-solid fa-feather-pointed text-3xl text-[#d4a373]"></i>
+        <h1 class="text-3xl font-bold tracking-wider">奇藝工坊</h1>
+        <span class="text-sm bg-[#68462f] px-3 py-1 rounded-full text-[#e6ccb2] border border-[#a57855]">漢字造字與說文解字系統</span>
+      </div>
+      <div class="text-sm text-[#d4a373]">
+        <i class="fa-solid fa-palette mr-2"></i>
+      </div>
+    </header>
+
+    <!-- 主要內容區：左右分欄 -->
+    <div class="flex-1 flex overflow-hidden">
+      
+      <!-- 左側固定主要面板 (已將可滾動修改為固定式) -->
+      <main class="w-7/12 h-full overflow-hidden p-8 space-y-6 bg-[#f5ebe0]">
         
-        if (classId && window.appState.savedClassrooms[classId]) {
-          if (window.appState.currentClassId === classId) {
-            window.appState.classData = window.appState.savedClassrooms[classId];
-          }
-        }
-        renderActiveView();
-      }
-    };
-
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'erchong_attendance_saved_classrooms' && e.newValue) {
-        try {
-          window.appState.savedClassrooms = JSON.parse(e.newValue);
-          if (window.appState.currentClassId && window.appState.savedClassrooms[window.appState.currentClassId]) {
-            window.appState.classData = window.appState.savedClassrooms[window.appState.currentClassId];
-          }
-          renderActiveView();
-        } catch(err){}
-      }
-    });
-  </script>
-
-  <!-- Firebase SDK Modules & Cross-Device/Cross-Domain Sync (Requirement 1 & 2) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-    window.appState = {
-      db: null,
-      auth: null,
-      appId: typeof __app_id !== 'undefined' ? __app_id : 'erchong-attendance-app',
-      teacherPassword: '',
-      currentClassId: '',
-      currentView: 'home',
-      isTeacherAuthenticated: false,
-      selectedStudentGroup: '',
-      teacherSelectedDate: getCSTDateString(),
-      studentSelectedDate: getCSTDateString(),
-      savedClassrooms: {},
-      classData: {
-        classId: '',
-        description: '',
-        sheetUrl: '',
-        firstPlaceCounts: {},
-        firstPlaceHistory: {},
-        tardyRulesList: [
-          {
-            id: 'rule_default_1',
-            targetGroup: 'ALL',
-            days: [1, 2, 3, 4, 5],
-            time: '08:15:00',
-            label: '預設晨間點名遲到門檻'
-          }
-        ],
-        tardyLogs: [],
-        groups: [],
-        announcements: {},
-        leaves: [],
-        attendance: {},
-        completedGroups: {}
-      }
-    };
-
-    let publicClassUnsubscribe = null;
-
-    async function initFirebase() {
-      try {
-        let firebaseConfig = null;
-        if (typeof __firebase_config !== 'undefined') {
-          firebaseConfig = JSON.parse(__firebase_config);
-        } else {
-          firebaseConfig = {
-            apiKey: "AIzaSyDummyKeyForPreviewModeOnly",
-            authDomain: "dummy-app.firebaseapp.com",
-            projectId: "dummy-app",
-            storageBucket: "dummy-app.appspot.com",
-            appId: "1:123456789:web:abcdef"
-          };
-        }
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        window.appState.db = db;
-        window.appState.auth = auth;
-
-        await signInAnonymously(auth);
-        console.log("Firebase initialized successfully!");
-
-        loadLocalBackup();
-      } catch (err) {
-        console.warn("Firestore running in isolated/fallback mode:", err);
-        loadLocalBackup();
-      }
-    }
-
-    function loadLocalBackup() {
-      try {
-        const localData = localStorage.getItem('erchong_attendance_saved_classrooms');
-        if (localData) {
-          window.appState.savedClassrooms = JSON.parse(localData);
-          const keys = Object.keys(window.appState.savedClassrooms);
-          if (keys.length > 0 && !window.appState.currentClassId) {
-            window.appState.currentClassId = keys[0];
-            window.appState.classData = window.appState.savedClassrooms[keys[0]];
-            setupClassroomRealtimeSync(keys[0]);
-          }
-        }
-      } catch(e) {}
-    }
-
-    // 跨裝置、跨網域實時同步指定教室資料 (Requirement 1 & 2)
-    function setupClassroomRealtimeSync(classId) {
-      if (!classId) return;
-      const { db, appId } = window.appState;
-
-      if (publicClassUnsubscribe) {
-        publicClassUnsubscribe();
-        publicClassUnsubscribe = null;
-      }
-
-      if (!db) return;
-
-      const upperClassId = classId.toUpperCase();
-      const publicClassRef = doc(db, 'artifacts', appId, 'public', 'data', 'public_classrooms', upperClassId);
-
-      publicClassUnsubscribe = onSnapshot(publicClassRef, (docSnap) => {
-        if (docSnap.exists()) {
-          const freshData = docSnap.data();
-          window.appState.classData = freshData;
-          if (!window.appState.savedClassrooms) window.appState.savedClassrooms = {};
-          window.appState.savedClassrooms[upperClassId] = freshData;
-
-          try {
-            localStorage.setItem('erchong_attendance_saved_classrooms', JSON.stringify(window.appState.savedClassrooms));
-          } catch(e) {}
-
-          renderActiveView();
-        }
-      }, (error) => {
-        console.error("Realtime classroom sync error:", error);
-      });
-    }
-
-    async function setupTeacherRealtimeSync(password) {
-      const { db, appId } = window.appState;
-      if (!db || !password) return;
-
-      const safePasswordKey = btoa(encodeURIComponent(password)).replace(/[/+=]/g, '_');
-      const teacherDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'teacher_accounts', safePasswordKey);
-
-      onSnapshot(teacherDocRef, (docSnap) => {
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          window.appState.savedClassrooms = data.classrooms || {};
-          
-          if (window.appState.currentClassId && window.appState.savedClassrooms[window.appState.currentClassId]) {
-            window.appState.classData = window.appState.savedClassrooms[window.appState.currentClassId];
-          }
-          try {
-            localStorage.setItem('erchong_attendance_saved_classrooms', JSON.stringify(window.appState.savedClassrooms));
-          } catch(e){}
-          renderActiveView();
-        } else {
-          saveClassroomToFirestore();
-        }
-      }, (error) => {
-        console.error("Firestore listener error:", error);
-      });
-    }
-
-    async function saveClassroomToFirestore() {
-      const { db, appId, teacherPassword, currentClassId, classData, savedClassrooms } = window.appState;
-      
-      if (currentClassId && classData) {
-        savedClassrooms[currentClassId] = Object.assign({}, classData);
-      }
-
-      try {
-        localStorage.setItem('erchong_attendance_saved_classrooms', JSON.stringify(savedClassrooms));
-      } catch(e) {}
-
-      // 本地多分頁廣播 (Requirement 2)
-      localSyncChannel.postMessage({
-        type: 'CLASSROOM_DATA_UPDATED',
-        classId: currentClassId,
-        classroomsMap: savedClassrooms
-      });
-
-      if (!db) return;
-
-      // 跨裝置與跨網域實時同步寫入 (Requirement 1)
-      try {
-        if (teacherPassword) {
-          const safePasswordKey = btoa(encodeURIComponent(teacherPassword)).replace(/[/+=]/g, '_');
-          const teacherDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'teacher_accounts', safePasswordKey);
-          await setDoc(teacherDocRef, {
-            password: teacherPassword,
-            classrooms: savedClassrooms,
-            updatedAt: new Date().toISOString()
-          }, { merge: true });
-        }
-
-        if (currentClassId && classData) {
-          const publicClassRef = doc(db, 'artifacts', appId, 'public', 'data', 'public_classrooms', currentClassId.toUpperCase());
-          await setDoc(publicClassRef, classData, { merge: true });
-        }
-      } catch (e) {
-        console.error("Error saving to Firestore:", e);
-      }
-    }
-
-    window.saveClassroomToFirestore = saveClassroomToFirestore;
-    window.setupTeacherRealtimeSync = setupTeacherRealtimeSync;
-    window.setupClassroomRealtimeSync = setupClassroomRealtimeSync;
-    window.initFirebase = initFirebase;
-  </script>
-
-  <!-- Application Controller -->
-  <script>
-    const WEEKDAY_NAMES = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-
-    function getCSTDateObj() {
-      const now = new Date();
-      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-      return new Date(utc + (3600000 * 8));
-    }
-
-    function getCSTDateString(dateObj = getCSTDateObj()) {
-      const y = dateObj.getFullYear();
-      const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const d = String(dateObj.getDate()).padStart(2, '0');
-      return `${y}-${m}-${d}`;
-    }
-
-    function getCSTTimeString() {
-      const d = getCSTDateObj();
-      return d.toTimeString().split(' ')[0];
-    }
-
-    function getEmbeddableGoogleSheetUrl(url) {
-      if (!url) return '';
-      let u = url.trim();
-      if (u.includes('docs.google.com/spreadsheets')) {
-        if (u.includes('/edit')) {
-          u = u.replace(/\/edit.*$/, '/pubhtml?widget=true');
-        } else if (u.includes('/view')) {
-          u = u.replace(/\/view.*$/, '/pubhtml?widget=true');
-        } else if (!u.includes('/pubhtml') && !u.includes('/preview')) {
-          u = u.replace(/\/+$/, '') + '/pubhtml?widget=true';
-        }
-      }
-      return u;
-    }
-
-    function startCSTClock() {
-      const clockElem = document.getElementById('cstClock');
-      setInterval(() => {
-        const timeStr = getCSTTimeString();
-        if (clockElem) clockElem.innerText = `CST ${timeStr}`;
-
-        if (timeStr === '00:00:00') {
-          checkAndResetDailyAttendance();
-        }
-      }, 1000);
-    }
-
-    function checkAndResetDailyAttendance() {
-      const todayStr = getCSTDateString();
-      if (window.appState.classData && !window.appState.classData.attendance[todayStr]) {
-        window.appState.classData.attendance[todayStr] = {};
-        window.appState.classData.completedGroups[todayStr] = [];
-        if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-        renderActiveView();
-      }
-    }
-
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      
-      const colors = {
-        success: 'bg-emerald-500 text-white',
-        error: 'bg-rose-500 text-white',
-        info: 'bg-slate-800 text-white',
-        warning: 'bg-amber-500 text-white'
-      };
-
-      toast.className = `px-4 py-2.5 rounded-2xl shadow-lg text-xs font-medium transform transition-all duration-300 opacity-0 translate-y-2 pointer-events-auto flex items-center gap-2 ${colors[type] || colors.info}`;
-      toast.innerHTML = `<span>${message}</span>`;
-      
-      container.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.classList.remove('opacity-0', 'translate-y-2');
-      }, 10);
-
-      setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-2');
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
-    }
-
-    function switchView(viewName) {
-      window.appState.currentView = viewName;
-
-      document.getElementById('viewHome').classList.add('hidden');
-      document.getElementById('viewTeacher').classList.add('hidden');
-      document.getElementById('viewTeacher').classList.remove('grid');
-      document.getElementById('viewStudent').classList.add('hidden');
-      document.getElementById('viewStudent').classList.remove('grid');
-
-      document.getElementById('homeBtn').classList.add('hidden');
-      document.getElementById('activeClassBadge').classList.add('hidden');
-      document.getElementById('activeClassBadge').classList.remove('flex');
-
-      if (viewName === 'home') {
-        document.getElementById('viewHome').classList.remove('hidden');
-      } else if (viewName === 'teacher') {
-        document.getElementById('viewTeacher').classList.remove('hidden');
-        document.getElementById('viewTeacher').classList.add('grid');
-        document.getElementById('homeBtn').classList.remove('hidden');
-        document.getElementById('activeClassBadge').classList.remove('hidden');
-        document.getElementById('activeClassBadge').classList.add('flex');
-        
-        const cfgId = document.getElementById('cfgClassId')?.value.trim().toUpperCase();
-        const displayClassId = cfgId || window.appState.currentClassId || '-';
-        document.getElementById('activeClassText').innerText = `教室：${displayClassId}`;
-      } else if (viewName === 'student') {
-        document.getElementById('viewStudent').classList.remove('hidden');
-        document.getElementById('viewStudent').classList.add('grid');
-        document.getElementById('homeBtn').classList.remove('hidden');
-        document.getElementById('activeClassBadge').classList.remove('hidden');
-        document.getElementById('activeClassBadge').classList.add('flex');
-        document.getElementById('activeClassText').innerText = `教室：${window.appState.currentClassId || '-'} (${window.appState.selectedStudentGroup || '-'})`;
-      }
-
-      renderActiveView();
-    }
-
-    function closeModal(modalId) {
-      document.getElementById(modalId).classList.add('hidden');
-    }
-
-    function openTeacherAuthModal() {
-      if (window.appState.isTeacherAuthenticated) {
-        switchView('teacher');
-      } else {
-        const pwdInput = document.getElementById('teacherAuthPassword');
-        if (pwdInput) {
-          pwdInput.value = '';
-        }
-        document.getElementById('modalTeacherAuth').classList.remove('hidden');
-        if (pwdInput) pwdInput.focus();
-      }
-    }
-
-    function verifyTeacherPassword() {
-      const pwdInput = document.getElementById('teacherAuthPassword').value.trim();
-      if (!pwdInput) {
-        showToast('⚠️ 請輸入登入密碼', 'error');
-        return;
-      }
-
-      window.appState.teacherPassword = pwdInput;
-      window.appState.isTeacherAuthenticated = true;
-      
-      closeModal('modalTeacherAuth');
-      showToast(`🔑 登入成功！已切換至密碼權限群組`, 'success');
-
-      if (window.setupTeacherRealtimeSync) {
-        window.setupTeacherRealtimeSync(pwdInput);
-      }
-
-      switchView('teacher');
-    }
-
-    function openStudentClassModal() {
-      populateSavedClassroomSelect();
-      document.getElementById('modalStudentClass').classList.remove('hidden');
-      document.getElementById('studentInputClassId').focus();
-    }
-
-    function populateSavedClassroomSelect() {
-      const selectElem = document.getElementById('studentSelectSavedClass');
-      if (!selectElem) return;
-      
-      selectElem.innerHTML = '<option value="">-- 請選擇已知教室 --</option>';
-      const savedMap = window.appState.savedClassrooms || {};
-      const keys = Object.keys(savedMap);
-
-      keys.forEach(k => {
-        const item = savedMap[k];
-        const opt = document.createElement('option');
-        opt.value = k;
-        opt.innerText = `${k} (${item.description || '無描述'})`;
-        selectElem.appendChild(opt);
-      });
-    }
-
-    function onSelectSavedClassroom(val) {
-      if (!val) return;
-      const inputElem = document.getElementById('studentInputClassId');
-      inputElem.value = val;
-      updateStudentGroupDropdown();
-    }
-
-    async function updateStudentGroupDropdown() {
-      const inputId = document.getElementById('studentInputClassId').value.trim().toUpperCase();
-      const selectElem = document.getElementById('studentSelectGroup');
-      const errMsg = document.getElementById('studentClassErrorMsg');
-
-      selectElem.innerHTML = '';
-      errMsg.classList.add('hidden');
-
-      if (!inputId) {
-        selectElem.innerHTML = '<option value="">-- 請先選擇或輸入教室編號 --</option>';
-        return;
-      }
-
-      let classObj = window.appState.savedClassrooms ? window.appState.savedClassrooms[inputId] : null;
-
-      if (!classObj && window.appState.db) {
-        try {
-          const publicDocRef = doc(window.appState.db, 'artifacts', window.appState.appId, 'public', 'data', 'public_classrooms', inputId);
-          const snap = await getDoc(publicDocRef);
-          if (snap.exists()) {
-            classObj = snap.data();
-          }
-        } catch(e){}
-      }
-
-      if (classObj && classObj.groups) {
-        window.appState.tempStudentClassObj = classObj;
-        classObj.groups.forEach(g => {
-          const opt = document.createElement('option');
-          opt.value = g.name;
-          opt.innerText = g.name;
-          selectElem.appendChild(opt);
-        });
-      } else {
-        selectElem.innerHTML = '<option value="">-- 尚未找到該教室編號 --</option>';
-        errMsg.classList.remove('hidden');
-      }
-    }
-
-    function enterStudentClassroom() {
-      const inputId = document.getElementById('studentInputClassId').value.trim().toUpperCase();
-      const selectedGrp = document.getElementById('studentSelectGroup').value;
-
-      let classObj = window.appState.tempStudentClassObj || (window.appState.savedClassrooms ? window.appState.savedClassrooms[inputId] : null);
-
-      if (classObj && selectedGrp) {
-        window.appState.currentClassId = inputId;
-        window.appState.classData = classObj;
-        window.appState.selectedStudentGroup = selectedGrp;
-
-        if (window.setupClassroomRealtimeSync) {
-          window.setupClassroomRealtimeSync(inputId);
-        }
-
-        closeModal('modalStudentClass');
-        showToast(`🎒 成功進入 ${inputId} 教室 - ${selectedGrp}`, 'success');
-        switchView('student');
-      } else {
-        document.getElementById('studentClassErrorMsg').classList.remove('hidden');
-        showToast('請重新確認教室編號與組別', 'error');
-      }
-    }
-
-    let redGridCountdownVal = 30;
-    let countdownTimer = null;
-
-    async function queryRedGridByClassId() {
-      const inputId = document.getElementById('redGridInputClassId').value.trim().toUpperCase();
-      const iframe = document.getElementById('redGridIframe');
-
-      if (!inputId) {
-        showToast('⚠️ 請輸入教室編號！', 'error');
-        iframe.srcdoc = `<div style="display:flex;height:100%;align-items:center;justify-content:center;font-family:sans-serif;color:#64748b;font-weight:bold;padding:20px;text-align:center;">⚠️ 請在上方輸入教室編號後點擊「查詢」。</div>`;
-        return;
-      }
-
-      let classObj = window.appState.savedClassrooms ? window.appState.savedClassrooms[inputId] : null;
-
-      if (!classObj && window.appState.db) {
-        try {
-          const publicDocRef = doc(window.appState.db, 'artifacts', window.appState.appId, 'public', 'data', 'public_classrooms', inputId);
-          const snap = await getDoc(publicDocRef);
-          if (snap.exists()) {
-            classObj = snap.data();
-          }
-        } catch(e) {
-          console.error("Error fetching public classroom for Red Grid:", e);
-        }
-      }
-
-      if (classObj && classObj.sheetUrl) {
-        const embedUrl = getEmbeddableGoogleSheetUrl(classObj.sheetUrl);
-        window.appState.activeRedGridUrl = embedUrl;
-        iframe.src = embedUrl;
-        showToast(`📊 成功載入教室【${inputId}】之紅格子試算表！`, 'success');
-        resetRedGridCountdown();
-      } else if (classObj && !classObj.sheetUrl) {
-        window.appState.activeRedGridUrl = null;
-        iframe.srcdoc = `<div style="display:flex;height:100%;align-items:center;justify-content:center;font-family:sans-serif;color:#ef4444;font-weight:bold;padding:20px;text-align:center;">⚠️ 教室【${inputId}】尚未設定 Google 試算表網址，請先由教師登入後進行設定。</div>`;
-        showToast(`⚠️ 教室【${inputId}】尚未設定 Google 試算表網址`, 'warning');
-      } else {
-        window.appState.activeRedGridUrl = null;
-        iframe.srcdoc = `<div style="display:flex;height:100%;align-items:center;justify-content:center;font-family:sans-serif;color:#ef4444;font-weight:bold;padding:20px;text-align:center;">❌ 找不到教室編號【${inputId}】，請確認編號是否正確。</div>`;
-        showToast(`❌ 找不到教室編號【${inputId}】`, 'error');
-      }
-    }
-
-    function resetRedGridCountdown() {
-      redGridCountdownVal = 30;
-      const cdElem = document.getElementById('redGridCountdown');
-      if (cdElem) cdElem.innerText = `30s`;
-
-      if (countdownTimer) clearInterval(countdownTimer);
-      countdownTimer = setInterval(() => {
-        redGridCountdownVal--;
-        if (cdElem) cdElem.innerText = `${redGridCountdownVal}s`;
-        if (redGridCountdownVal <= 0) {
-          redGridCountdownVal = 30;
-          const iframe = document.getElementById('redGridIframe');
-          if (window.appState.activeRedGridUrl && !document.getElementById('modalRedGrid').classList.contains('hidden')) {
-            iframe.src = window.appState.activeRedGridUrl;
-            showToast('🔄 Google 試算表內容已自動更新', 'info');
-          }
-        }
-      }, 1000);
-    }
-
-    function openRedGridModal() {
-      document.getElementById('modalRedGrid').classList.remove('hidden');
-      const inputElem = document.getElementById('redGridInputClassId');
-      const iframe = document.getElementById('redGridIframe');
-      
-      if (window.appState.currentClassId) {
-        inputElem.value = window.appState.currentClassId;
-        queryRedGridByClassId();
-      } else {
-        inputElem.value = '';
-        iframe.srcdoc = `<div style="display:flex;height:100%;align-items:center;justify-content:center;font-family:sans-serif;color:#64748b;font-weight:bold;padding:20px;text-align:center;">🔍 請在上方輸入教室編號後點擊「查詢」按鈕。</div>`;
-      }
-
-      setTimeout(() => inputElem.focus(), 100);
-    }
-
-    let isQrDrawerOpen = false;
-    function toggleQrDrawer() {
-      const drawer = document.getElementById('teacherQrDrawer');
-      const icon = document.getElementById('qrDrawerTriangleIcon');
-      const img = document.getElementById('qrCodeImg');
-
-      isQrDrawerOpen = !isQrDrawerOpen;
-
-      if (isQrDrawerOpen) {
-        drawer.classList.remove('translate-x-[calc(100%-3rem)]');
-        drawer.classList.add('translate-x-0');
-        icon.classList.remove('-rotate-180');
-        icon.classList.add('rotate-0');
-
-        const currentUrl = window.location.origin + window.location.pathname;
-        img.src = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(currentUrl)}`;
-      } else {
-        drawer.classList.add('translate-x-[calc(100%-3rem)]');
-        drawer.classList.remove('translate-x-0');
-        icon.classList.remove('rotate-0');
-        icon.classList.add('-rotate-180');
-      }
-    }
-
-    function saveSheetUrl() {
-      const url = document.getElementById('cfgSheetUrl').value.trim();
-      if (window.appState.classData) {
-        window.appState.classData.sheetUrl = url;
-        if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-        showToast('✅ Google 試算表網址已儲存', 'success');
-      }
-    }
-
-    function renderActiveView() {
-      const dateToday = getCSTDateString();
-      if (!window.appState.teacherSelectedDate) window.appState.teacherSelectedDate = dateToday;
-      if (!window.appState.studentSelectedDate) window.appState.studentSelectedDate = dateToday;
-
-      const tAnnDate = document.getElementById('teacherAnnounceDate');
-      if (tAnnDate) tAnnDate.value = window.appState.teacherSelectedDate;
-
-      const tLeaveDate = document.getElementById('teacherLeaveFilterDate');
-      if (tLeaveDate) tLeaveDate.value = window.appState.teacherSelectedDate;
-
-      const tViewDate = document.getElementById('teacherViewDate');
-      if (tViewDate) tViewDate.value = window.appState.teacherSelectedDate;
-
-      const sAnnDate = document.getElementById('studentAnnounceDate');
-      if (sAnnDate) sAnnDate.value = window.appState.studentSelectedDate;
-
-      const sheetInput = document.getElementById('cfgSheetUrl');
-      if (sheetInput) {
-        sheetInput.value = window.appState.classData ? (window.appState.classData.sheetUrl || '') : '';
-      }
-
-      renderAnnouncements();
-      renderLeaveList();
-      renderSeatingMap('teacher');
-      renderSeatingMap('student');
-      renderClassroomList();
-      populateTardyGroupOptions();
-      renderActiveTardyRulesList();
-      renderTardyLogs();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      startCSTClock();
-      if (window.initFirebase) window.initFirebase();
-
-      const announceInput = document.getElementById('teacherAnnounceInput');
-      if (announceInput) {
-        announceInput.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            const val = announceInput.value;
-            const lines = val.split('\n');
-            const nextNum = lines.length + 1;
-            announceInput.value = val + `\n${nextNum}. `;
-          }
-        });
-      }
-    });
-
-    function saveAnnouncement() {
-      const dateKey = document.getElementById('teacherAnnounceDate').value || getCSTDateString();
-      const content = document.getElementById('teacherAnnounceInput').value;
-      
-      if (!window.appState.classData.announcements) window.appState.classData.announcements = {};
-      window.appState.classData.announcements[dateKey] = content;
-
-      if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-      showToast(`📢 已儲存 ${window.appState.currentClassId || '教室'} [${dateKey}] 之重要公告`, 'success');
-      renderAnnouncements();
-    }
-
-    function loadAnnouncementForDate() {
-      const dateKey = document.getElementById('teacherAnnounceDate').value;
-      window.appState.teacherSelectedDate = dateKey;
-      renderAnnouncements();
-    }
-
-    function loadStudentAnnouncement() {
-      const dateKey = document.getElementById('studentAnnounceDate').value;
-      window.appState.studentSelectedDate = dateKey;
-      renderAnnouncements();
-    }
-
-    function renderAnnouncements() {
-      const tDate = document.getElementById('teacherAnnounceDate')?.value || window.appState.teacherSelectedDate || getCSTDateString();
-      const sDate = document.getElementById('studentAnnounceDate')?.value || window.appState.studentSelectedDate || getCSTDateString();
-      const annMap = window.appState.classData ? (window.appState.classData.announcements || {}) : {};
-
-      const tInput = document.getElementById('teacherAnnounceInput');
-      if (tInput) {
-        tInput.value = annMap[tDate] !== undefined ? annMap[tDate] : '1. ';
-      }
-
-      const sDisplay = document.getElementById('studentAnnounceContent');
-      if (sDisplay) {
-        sDisplay.innerText = annMap[sDate] || '今日無公告事項';
-      }
-    }
-
-    function onLeaveTypeChange() {
-      const type = document.getElementById('leaveType').value;
-      const weeklyBox = document.getElementById('weeklyLeaveDaysBox');
-      const lblEndDate = document.getElementById('lblLeaveEndDate');
-
-      if (type === '週期') {
-        weeklyBox.classList.remove('hidden');
-        lblEndDate.innerHTML = '結束日期 (選填)';
-      } else if (type === '區間') {
-        weeklyBox.classList.add('hidden');
-        lblEndDate.innerHTML = '結束日期 <span class="text-rose-500">*</span>';
-      } else {
-        weeklyBox.classList.add('hidden');
-        lblEndDate.innerHTML = '結束日期 (選填)';
-      }
-    }
-
-    function openLeaveModal() {
-      document.getElementById('leaveStartDate').value = getCSTDateString();
-      document.getElementById('leaveEndDate').value = '';
-      document.getElementById('leaveStudentName').value = '';
-      document.getElementById('leaveReason').value = '';
-      document.getElementById('leaveType').value = '單次';
-      document.querySelectorAll('.leave-weekday-cb').forEach(cb => cb.checked = false);
-      onLeaveTypeChange();
-      document.getElementById('modalLeaveForm').classList.remove('hidden');
-    }
-
-    function submitLeaveForm() {
-      const type = document.getElementById('leaveType').value;
-      const startDate = document.getElementById('leaveStartDate').value;
-      const endDate = document.getElementById('leaveEndDate').value;
-      const student = document.getElementById('leaveStudentName').value.trim();
-      const reason = document.getElementById('leaveReason').value.trim();
-
-      if (!startDate) {
-        showToast('⚠️ 請選擇開始日期！', 'error');
-        return;
-      }
-      if (!student) {
-        showToast('⚠️ 請輸入學生姓名！', 'error');
-        return;
-      }
-      if (!reason) {
-        showToast('⚠️ 請輸入假別或事由！', 'error');
-        return;
-      }
-
-      let selectedWeeklyDays = [];
-      if (type === '週期') {
-        const cbs = document.querySelectorAll('.leave-weekday-cb:checked');
-        selectedWeeklyDays = Array.from(cbs).map(cb => parseInt(cb.value, 10));
-        if (selectedWeeklyDays.length === 0) {
-          showToast('⚠️ 請至少勾選一個週期性請假星期！', 'error');
-          return;
-        }
-      }
-
-      if (type === '區間') {
-        if (!endDate) {
-          showToast('⚠️ 請假方式為區間請假時，結束日期為必填！', 'error');
-          return;
-        }
-        if (endDate < startDate) {
-          showToast('⚠️ 結束日期不能早於開始日期！', 'error');
-          return;
-        }
-      }
-
-      const leaveItem = {
-        id: Date.now().toString(),
-        type,
-        startDate,
-        endDate: endDate || (type === '區間' ? startDate : (type === '週期' ? '2099-12-31' : startDate)),
-        student,
-        reason: reason || (type === '晚到' ? '預計晚到' : '請假'),
-        weeklyDays: selectedWeeklyDays
-      };
-
-      if (!window.appState.classData.leaves) window.appState.classData.leaves = [];
-      window.appState.classData.leaves.push(leaveItem);
-
-      if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-      
-      closeModal('modalLeaveForm');
-      showToast(`✅ 已新增 ${student} 的${type === '晚到' ? '晚到登記' : '假單'}`, 'success');
-      
-      renderLeaveList();
-      renderSeatingMap('teacher');
-      renderSeatingMap('student');
-    }
-
-    function deleteLeave(leaveId) {
-      if (!window.appState.classData.leaves) return;
-      window.appState.classData.leaves = window.appState.classData.leaves.filter(l => l.id !== leaveId);
-      if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-      showToast('🗑️ 已刪除請假紀錄', 'info');
-      renderLeaveList();
-      renderSeatingMap('teacher');
-      renderSeatingMap('student');
-    }
-
-    function getLeavesForDate(dateStr) {
-      const leaves = window.appState.classData ? (window.appState.classData.leaves || []) : [];
-      const queryDateObj = new Date(dateStr + 'T00:00:00');
-      const dayOfWeek = queryDateObj.getDay();
-
-      return leaves.filter(l => {
-        const inRange = l.startDate <= dateStr && dateStr <= l.endDate;
-        if (!inRange) return false;
-        if (l.type === '週期') {
-          return l.weeklyDays && l.weeklyDays.includes(dayOfWeek);
-        }
-        return true;
-      });
-    }
-
-    function onTeacherLeaveDateChange() {
-      const val = document.getElementById('teacherLeaveFilterDate').value;
-      if (val) {
-        window.appState.teacherSelectedDate = val;
-      }
-      renderLeaveList();
-      renderSeatingMap('teacher');
-    }
-
-    function renderLeaveList() {
-      const leaveDateElem = document.getElementById('teacherLeaveFilterDate');
-      if (leaveDateElem && leaveDateElem.value) {
-        window.appState.teacherSelectedDate = leaveDateElem.value;
-      }
-      const tDate = window.appState.teacherSelectedDate || getCSTDateString();
-      const sDate = window.appState.studentSelectedDate || getCSTDateString();
-
-      const tContainer = document.getElementById('teacherLeaveContainer');
-      const sContainer = document.getElementById('studentLeaveContainer');
-
-      const tLeaves = getLeavesForDate(tDate);
-      const sLeaves = getLeavesForDate(sDate);
-
-      if (tContainer) {
-        if (tLeaves.length === 0) {
-          tContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">(${tDate}) 暫無請假紀錄</p>`;
-        } else {
-          tContainer.innerHTML = tLeaves.map(l => {
-            const isLate = (l.type === '晚到');
-            const bgStyle = isLate ? 'bg-amber-100/90 border-amber-300 text-amber-900 font-medium' : 'bg-rose-50/80 border-rose-200 text-rose-800';
-            const badgeStyle = isLate ? 'bg-amber-200 text-amber-900 font-bold' : 'bg-rose-200 text-rose-800 font-bold';
-
-            return `
-              <div class="${bgStyle} border rounded-xl p-2.5 flex items-center justify-between text-xs shadow-sm">
-                <div>
-                  <span class="font-bold">${l.student}</span>
-                  <span class="${badgeStyle} text-xs px-1.5 py-0.5 rounded ml-1">${l.type}</span>
-                  <p class="text-xs opacity-90 mt-0.5">${l.reason}</p>
+        <!-- 壹、造字繪製與結構組合 -->
+        <section class="bg-[#fcf8f2] rounded-xl p-6 border-2 border-[#d7c4b7] shadow-sm">
+          <div class="flex items-center justify-between mb-4 border-b-2 border-[#b08968] pb-3">
+            <h2 class="text-2xl font-bold text-[#4a3222] flex items-center">
+              <span class="w-8 h-8 rounded-full bg-[#8c6239] text-[#f7f3ed] flex items-center justify-center text-base mr-3">壹</span>
+              造字繪製與結構組合
+            </h2>
+            <span class="text-xs text-[#7f5539]">可於預覽格內自由移動、360度旋轉與8方位拉伸縮放文字部件</span>
+          </div>
+
+          <!-- 操作面板 -->
+          <div class="grid grid-cols-12 gap-6">
+            <!-- 左側操作與按鈕 -->
+            <div class="col-span-5 flex flex-col justify-between space-y-4">
+              <div>
+                <label class="block text-[#5c3d24] font-bold mb-2 text-lg">輸入造字文字部件：</label>
+                <div class="flex space-x-2">
+                  <input type="text" id="input-char" maxlength="2" placeholder="如：木、日、氵" 
+                    class="w-full px-4 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] text-xl text-center bg-white text-[#3d2314]">
+                  <button id="btn-add-char" class="px-5 py-2 bg-[#8c6239] hover:bg-[#6b4728] text-white rounded-lg font-bold text-lg shadow transition flex items-center justify-center text-center whitespace-nowrap">
+                    <i class="fa-solid fa-plus mr-1"></i> 新增
+                  </button>
                 </div>
-                <button onclick="deleteLeave('${l.id}')" class="text-slate-400 hover:text-rose-600 p-1 transition-colors" title="刪除請假">
-                  <i class="fa-solid fa-trash-can"></i>
+              </div>
+
+              <!-- 工具指引說明 -->
+              <div class="bg-[#f2e9e1] p-3 rounded-lg text-xs text-[#6c4627] space-y-1 border border-[#d7c4b7]">
+                <p class="font-bold text-sm"><i class="fa-solid fa-circle-info mr-1"></i> 操作與注音規範說明：</p>
+                <p>1. 輸入部件後點擊「新增」放入田字格。</p>
+                <p>2. 點擊物件選取後，顯現 <b>8 個編輯點</b>（4 頂點 + 4 邊中點）與<b>上方旋轉點</b>供縮放與 360 度旋轉。</p>
+                <p>3. 注音呈現符合<b>繁體正統規範</b>：輕聲（˙）置於聲母上方、聲母在上、韻母在下、聲符（ˊ ˇ ˋ）靠右標註。</p>
+              </div>
+
+              <!-- 刪除與確認按鈕群 (統一文字大小並精準置中) -->
+              <div class="space-y-2 pt-2">
+                <button id="btn-delete-selected" class="w-full py-3 bg-[#b07d62] hover:bg-[#8f5e45] text-white rounded-lg font-bold text-lg shadow transition flex items-center justify-center text-center">
+                  <i class="fa-solid fa-trash-can mr-2"></i>刪除選取物件
+                </button>
+                <button id="btn-confirm-drawing" onclick="confirmDrawing()" class="w-full py-3 bg-[#5c3d24] hover:bg-[#3d2314] text-[#f7f3ed] rounded-lg font-bold text-lg shadow-lg transition flex items-center justify-center text-center">
+                  <i class="fa-solid fa-stamp mr-2 text-[#e6ccb2]"></i>繪圖確認 (同步至預覽)
                 </button>
               </div>
-            `;
-          }).join('');
-        }
-      }
+            </div>
 
-      if (sContainer) {
-        if (sLeaves.length === 0) {
-          sContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">今日全員到齊無請假紀錄</p>`;
-        } else {
-          sContainer.innerHTML = sLeaves.map(l => {
-            const isLate = (l.type === '晚到');
-            const bgStyle = isLate ? 'bg-amber-100/90 border-amber-300 text-amber-900 font-medium' : 'bg-slate-50 border-slate-200';
-            const badgeStyle = isLate ? 'bg-amber-200 text-amber-900 font-bold' : 'bg-rose-100 text-rose-700';
-
-            return `
-              <div class="${bgStyle} border rounded-xl p-2.5 text-xs flex items-center justify-between shadow-sm">
-                <span class="font-bold">${l.student}</span>
-                <span class="${badgeStyle} text-xs px-2 py-0.5 rounded-full font-medium">${l.type} - ${l.reason}</span>
-              </div>
-            `;
-          }).join('');
-        }
-      }
-    }
-
-    function calculateStudentCircularPosition(index, totalStudents, radiusPercent = 39) {
-      if (totalStudents === 1) {
-        return { left: '50%', top: '15%' };
-      }
-      const angle = (index / totalStudents) * 2 * Math.PI - (Math.PI / 2);
-      const x = 50 + radiusPercent * Math.cos(angle);
-      const y = 50 + radiusPercent * Math.sin(angle);
-      return {
-        left: `${x.toFixed(2)}%`,
-        top: `${y.toFixed(2)}%`
-      };
-    }
-
-    function renderSeatingMap(mode = 'teacher') {
-      const isTeacher = (mode === 'teacher');
-      const containerId = isTeacher ? 'teacherSeatingContainer' : 'studentSeatingContainer';
-      const container = document.getElementById(containerId);
-      if (!container) return;
-
-      const curDate = isTeacher ? (window.appState.teacherSelectedDate || getCSTDateString()) : (window.appState.studentSelectedDate || getCSTDateString());
-      let groups = window.appState.classData ? (window.appState.classData.groups || []) : [];
-
-      if (groups.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-8 col-span-2">尚無教室組別資料，請先設定教室與學生名單</p>`;
-        return;
-      }
-
-      if (!isTeacher) {
-        const targetGroup = window.appState.selectedStudentGroup;
-        if (targetGroup) {
-          groups = groups.filter(g => g.name === targetGroup);
-          const badge = document.getElementById('studentGroupTitleBadge');
-          if (badge) badge.innerText = `目前組別：${targetGroup}`;
-        }
-      }
-
-      const attendance = (window.appState.classData.attendance && window.appState.classData.attendance[curDate]) || {};
-      const completedList = (window.appState.classData.completedGroups && window.appState.classData.completedGroups[curDate]) || [];
-      const leavesToday = getLeavesForDate(curDate);
-
-      container.innerHTML = '';
-
-      groups.forEach((group) => {
-        const groupCard = document.createElement('div');
-        groupCard.className = 'bg-white/90 border border-slate-200/80 rounded-3xl p-4 flex flex-col items-center shadow-sm relative hover:border-sky-200 transition-all w-full';
-
-        const checkedStudents = group.students.filter(s => {
-          const hasAttended = !!attendance[s];
-          const leaveObj = leavesToday.find(l => l.student === s);
-          const isNormalLeave = leaveObj && leaveObj.type !== '晚到';
-          return hasAttended || isNormalLeave;
-        });
-
-        const isGroupAllPresent = (group.students.length > 0 && checkedStudents.length === group.students.length);
-
-        if (isGroupAllPresent && !completedList.includes(group.name)) {
-          completedList.push(group.name);
-          if (!window.appState.classData.completedGroups) window.appState.classData.completedGroups = {};
-          window.appState.classData.completedGroups[curDate] = completedList;
-          if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-        } else if (!isGroupAllPresent && completedList.includes(group.name)) {
-          const groupIdx = completedList.indexOf(group.name);
-          if (groupIdx > -1) completedList.splice(groupIdx, 1);
-          if (!window.appState.classData.completedGroups) window.appState.classData.completedGroups = {};
-          window.appState.classData.completedGroups[curDate] = completedList;
-          if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-        }
-
-        if (!window.appState.classData.firstPlaceCounts) window.appState.classData.firstPlaceCounts = {};
-        if (!window.appState.classData.firstPlaceHistory) window.appState.classData.firstPlaceHistory = {};
-
-        const currentFirstGroup = completedList.length > 0 ? completedList[0] : null;
-        const previousFirstGroup = window.appState.classData.firstPlaceHistory[curDate] || null;
-
-        if (currentFirstGroup !== previousFirstGroup) {
-          if (previousFirstGroup) {
-            window.appState.classData.firstPlaceCounts[previousFirstGroup] = Math.max(0, (window.appState.classData.firstPlaceCounts[previousFirstGroup] || 1) - 1);
-          }
-          if (currentFirstGroup) {
-            window.appState.classData.firstPlaceCounts[currentFirstGroup] = (window.appState.classData.firstPlaceCounts[currentFirstGroup] || 0) + 1;
-            window.appState.classData.firstPlaceHistory[curDate] = currentFirstGroup;
-          } else {
-            delete window.appState.classData.firstPlaceHistory[curDate];
-          }
-          if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-        }
-
-        const isCompleted = completedList.includes(group.name);
-        const totalN = group.students.length;
-
-        const studentCardsHtml = group.students.map((std, idx) => {
-          const pos = calculateStudentCircularPosition(idx, totalN, 39);
-          const hasAttended = !!attendance[std];
-          const timeStr = attendance[std] || '';
-          const leaveObj = leavesToday.find(l => l.student === std);
-          const isLeave = !!leaveObj;
-          const isLateLeave = leaveObj && leaveObj.type === '晚到';
-
-          let chipClass = 'bg-white/95 border-slate-300 text-slate-800 hover:border-sky-500 hover:shadow-md';
-          let stateBadge = '';
-
-          if (isLateLeave && !hasAttended) {
-            chipClass = 'bg-amber-100/90 border-amber-300 text-amber-900 font-medium shadow-sm hover:bg-amber-200';
-            stateBadge = `<span class="text-xs bg-amber-200 text-amber-800 px-1.5 rounded mt-0.5 truncate max-w-full font-medium">晚到(${leaveObj.reason})</span>`;
-          } else if (isLeave && !isLateLeave) {
-            chipClass = 'bg-rose-50 border-rose-200 text-rose-600 opacity-80';
-            stateBadge = `<span class="text-xs bg-rose-200 text-rose-800 px-1.5 rounded mt-0.5 truncate max-w-full font-medium">${leaveObj.reason}</span>`;
-          }
-
-          if (hasAttended) {
-            chipClass = 'bg-emerald-50 border-emerald-500 text-emerald-800 shadow-md font-semibold hover:bg-emerald-100';
-            stateBadge = `<span class="text-xs text-emerald-600 font-mono font-semibold mt-0.5">${timeStr} 到齊</span>`;
-          }
-
-          return `
-            <div style="position: absolute; left: ${pos.left}; top: ${pos.top}; transform: translate(-50%, -50%); z-index: 20;" class="w-[110px] sm:w-[125px] h-[50px] sm:h-[56px]">
-              <button onclick="toggleAttendance('${std}', '${group.name}', '${curDate}')" 
-                      class="w-full h-full p-1.5 sm:p-2 rounded-2xl border ${chipClass} transition-all flex flex-col items-center justify-center shadow-md hover:shadow-lg active:scale-95 overflow-hidden cursor-pointer">
-                <div class="flex items-center gap-1 font-bold text-sm sm:text-base truncate max-w-full">
-                  ${hasAttended ? '<i class="fa-solid fa-circle-check text-emerald-500"></i>' : ''}
-                  ${isLateLeave && !hasAttended ? '<i class="fa-solid fa-clock text-amber-600"></i>' : ''}
-                  ${isLeave && !isLateLeave ? '<i class="fa-solid fa-user-minus text-rose-400"></i>' : ''}
-                  <span class="truncate">${std}</span>
+            <!-- 右側圖片樣式注音田字格繪圖區 -->
+            <div class="col-span-7 flex flex-col items-center">
+              <div class="text-sm font-bold text-[#6c4627] mb-2">造字編輯區</div>
+              
+              <!-- 經典注音田字格 -->
+              <div class="zhuyin-tianzige-frame w-[370px] h-[280px]">
+                <!-- 左側：主田字格 (280px x 280px) -->
+                <div id="tianzige-editor" class="tianzige-square w-[280px] h-[280px]">
+                  <!-- 背景中央十字虛線 (SVG) -->
+                  <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#b08968" stroke-width="2" stroke-dasharray="6,6" />
+                    <line x1="50%" y1="0" x2="50%" y2="100%" stroke="#b08968" stroke-width="2" stroke-dasharray="6,6" />
+                  </svg>
+                  <!-- 動態新增的文字部件將放置於此 -->
                 </div>
-                ${stateBadge}
-              </button>
-            </div>
-          `;
-        }).join('');
 
-        groupCard.innerHTML = `
-          <div class="w-full flex items-center justify-between text-xs font-bold text-slate-700 border-b border-slate-100 pb-2 mb-2">
-            <span class="flex items-center gap-1.5">
-              <i class="fa-solid fa-users text-sky-500"></i> ${group.name}
-            </span>
-            <span class="text-xs font-medium bg-slate-100 px-2 py-0.5 rounded-full text-slate-500">
-              到齊：${checkedStudents.length} / ${group.students.length} 人
-            </span>
+                <!-- 右側：注音直欄區 (90px x 280px) -->
+                <div id="editor-zhuyin-column" class="zhuyin-column w-[90px] h-[280px]">
+                  <!-- 正統直排注音渲染區 -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 貳、說文解字 -->
+        <section class="bg-[#fcf8f2] rounded-xl p-6 border-2 border-[#d7c4b7] shadow-sm">
+          <div class="flex items-center justify-between mb-4 border-b-2 border-[#b08968] pb-3">
+            <h2 class="text-2xl font-bold text-[#4a3222] flex items-center">
+              <span class="w-8 h-8 rounded-full bg-[#8c6239] text-[#f7f3ed] flex items-center justify-center text-base mr-3">貳</span>
+              說文解字
+            </h2>
+            <span class="text-xs text-[#7f5539]">填寫文字典故與詞性註解</span>
           </div>
 
-          <div class="circular-table-area flex items-center justify-center">
-            <div class="hexagon-container">
-              <div class="hexagon ${isCompleted ? 'hexagon-completed' : ''}"></div>
-              <div class="relative z-10 text-white text-center font-bold px-2 pointer-events-none">
-                <span class="block text-sm font-fun">${group.name}</span>
-                ${isCompleted ? '<span class="text-xs bg-emerald-700/80 text-emerald-100 px-1.5 py-0.5 rounded-full mt-1 inline-block animate-pulse">🎉 全組到齊!</span>' : '<span class="text-xs opacity-80">討論桌</span>'}
+          <div class="grid grid-cols-2 gap-4">
+            <!-- 設計師 (左右並列) -->
+            <div class="flex items-center space-x-2">
+              <label class="text-[#5c3d24] font-bold shrink-0">奇藝工坊設計師：</label>
+              <input type="text" id="input-designer" value="造字大師" 
+                class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314]">
+            </div>
+
+            <!-- 注音符號 (左右並列) -->
+            <div class="flex items-center space-x-2">
+              <label class="text-[#5c3d24] font-bold shrink-0">注音符號：</label>
+              <input type="text" id="input-zhuyin" value="ㄑㄧˊ ㄧˋ" placeholder="如：ㄑㄧˊ ㄧˋ 或 ˙ㄇㄚ"
+                class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314]">
+            </div>
+
+            <!-- 部首、總筆劃、詞性與造字方法 (左右並列) -->
+            <div class="col-span-2 grid grid-cols-4 gap-3">
+              <!-- 部首 -->
+              <div class="flex items-center space-x-1">
+                <label class="text-[#5c3d24] font-bold shrink-0">部首：</label>
+                <input type="text" id="input-radical" value="乙部" 
+                  class="w-full h-[42px] px-2 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314]">
+              </div>
+
+              <!-- 總筆劃 -->
+              <div class="flex items-center space-x-1">
+                <label class="text-[#5c3d24] font-bold shrink-0">總筆劃：</label>
+                <input type="number" id="input-strokes" value="12" 
+                  class="w-full h-[42px] px-2 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314]">
+              </div>
+
+              <!-- 詞性 (下拉式選單) -->
+              <div class="flex items-center space-x-1">
+                <label class="text-[#5c3d24] font-bold shrink-0">詞性：</label>
+                <select id="input-pos" class="w-full h-[42px] px-1 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314] cursor-pointer">
+                  <option value="形容詞 / 名詞" selected>形容詞 / 名詞</option>
+                  <option value="名詞">名詞</option>
+                  <option value="動詞">動詞</option>
+                  <option value="形容詞">形容詞</option>
+                  <option value="副詞">副詞</option>
+                  <option value="代名詞">代名詞</option>
+                  <option value="介詞">介詞</option>
+                  <option value="連詞">連詞</option>
+                  <option value="助詞">助詞</option>
+                  <option value="歎詞">歎詞</option>
+                </select>
+              </div>
+
+              <!-- 造字方法 (下拉式選單) -->
+              <div class="flex items-center space-x-1">
+                <label class="text-[#5c3d24] font-bold shrink-0">造字方法：</label>
+                <select id="input-method" class="w-full h-[42px] px-1 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314] cursor-pointer">
+                  <option value="象形" selected>象形</option>
+                  <option value="指事">指事</option>
+                  <option value="會意">會意</option>
+                  <option value="形聲">形聲</option>
+                </select>
               </div>
             </div>
 
-            ${studentCardsHtml}
-          </div>
-        `;
-
-        container.appendChild(groupCard);
-      });
-
-      renderRankingList(completedList, isTeacher);
-      renderFirstPlaceStats();
-    }
-
-    function toggleAttendance(studentName, groupName, dateKey) {
-      if (!window.appState.classData.attendance) window.appState.classData.attendance = {};
-      if (!window.appState.classData.attendance[dateKey]) window.appState.classData.attendance[dateKey] = {};
-
-      const curRecord = window.appState.classData.attendance[dateKey][studentName];
-      if (curRecord) {
-        delete window.appState.classData.attendance[dateKey][studentName];
-        showToast(`已取消 ${studentName} 的點名紀錄`, 'info');
-      } else {
-        const dateObj = getCSTDateObj();
-        const timeNowStr = getCSTTimeString();
-        window.appState.classData.attendance[dateKey][studentName] = timeNowStr;
-
-        const tardyResult = evaluateAllTardyRules(studentName, groupName, dateObj, timeNowStr);
-        if (tardyResult.isTardy) {
-          logTardyRecord(studentName, groupName, dateKey, timeNowStr, tardyResult.violatedRules);
-          const firstRule = tardyResult.violatedRules[0];
-          showToast(`⚠️ ${studentName} 簽到 (${timeNowStr}) 超過「${firstRule.label || '遲到門檻'}」(${firstRule.time})，已登錄遲到`, 'warning');
-        } else {
-          showToast(`✨ ${studentName} 點名成功！ (${timeNowStr})`, 'success');
-        }
-      }
-
-      if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-      renderSeatingMap('teacher');
-      renderSeatingMap('student');
-    }
-
-    function evaluateAllTardyRules(studentName, groupName, dateObj, timeNowStr) {
-      const dayOfWeek = dateObj.getDay();
-      const rulesList = window.appState.classData.tardyRulesList || [];
-      const violatedRules = [];
-
-      rulesList.forEach(rule => {
-        const dayMatches = rule.days && rule.days.includes(dayOfWeek);
-        const groupMatches = rule.targetGroup === 'ALL' || rule.targetGroup === groupName;
-
-        if (dayMatches && groupMatches) {
-          const cutoffTime = rule.time.length === 5 ? `${rule.time}:00` : rule.time;
-          if (timeNowStr > cutoffTime) {
-            violatedRules.push({
-              ruleId: rule.id,
-              label: rule.label || '遲到規則',
-              time: cutoffTime,
-              targetGroup: rule.targetGroup,
-              dayName: WEEKDAY_NAMES[dayOfWeek]
-            });
-          }
-        }
-      });
-
-      return {
-        isTardy: violatedRules.length > 0,
-        violatedRules: violatedRules
-      };
-    }
-
-    function logTardyRecord(studentName, groupName, dateStr, timeStr, violatedRules) {
-      if (!window.appState.classData.tardyLogs) window.appState.classData.tardyLogs = [];
-      const ruleLabels = violatedRules.map(r => `${r.label} (${r.time})`).join('; ');
-
-      window.appState.classData.tardyLogs.unshift({
-        id: Date.now().toString(),
-        student: studentName,
-        group: groupName,
-        date: dateStr,
-        time: timeStr,
-        ruleDetails: ruleLabels,
-        dayName: violatedRules[0]?.dayName || ''
-      });
-    }
-
-    function toggleAllWeekdays() {
-      const cbs = document.querySelectorAll('.tardy-day-cb');
-      const allChecked = Array.from(cbs).every(cb => cb.checked);
-      cbs.forEach(cb => cb.checked = !allChecked);
-    }
-
-    function openTardyModal() {
-      populateTardyGroupOptions();
-      renderActiveTardyRulesList();
-      renderTardyLogs();
-      document.getElementById('modalTardy').classList.remove('hidden');
-    }
-
-    function populateTardyGroupOptions() {
-      const select = document.getElementById('tardyBatchTargetGroup');
-      if (!select) return;
-      select.innerHTML = '<option value="ALL">全班所有組別</option>';
-      const groups = window.appState.classData ? (window.appState.classData.groups || []) : [];
-      groups.forEach(g => {
-        const opt = document.createElement('option');
-        opt.value = g.name;
-        opt.innerText = g.name;
-        select.appendChild(opt);
-      });
-    }
-
-    function addNewTardyRuleEntry() {
-      const selectedDays = Array.from(document.querySelectorAll('.tardy-day-cb:checked')).map(cb => parseInt(cb.value, 10));
-      let timeVal = document.getElementById('tardyTimeInput').value;
-      const targetGrp = document.getElementById('tardyBatchTargetGroup').value;
-      const labelVal = document.getElementById('tardyRuleNameInput').value.trim();
-
-      if (selectedDays.length === 0) {
-        showToast('請至少選擇一個適用星期！', 'error');
-        return;
-      }
-
-      if (!timeVal) {
-        showToast('請設定有效的遲到時間點', 'error');
-        return;
-      }
-
-      if (timeVal.length === 5) timeVal += ':00';
-
-      if (!window.appState.classData.tardyRulesList) {
-        window.appState.classData.tardyRulesList = [];
-      }
-
-      const newRule = {
-        id: 'rule_' + Date.now(),
-        targetGroup: targetGrp,
-        days: selectedDays,
-        time: timeVal,
-        label: labelVal || (targetGrp === 'ALL' ? '全班遲到門檻' : `${targetGrp}遲到門檻`)
-      };
-
-      window.appState.classData.tardyRulesList.push(newRule);
-
-      if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-      document.getElementById('tardyRuleNameInput').value = '';
-      showToast(`⚡ 已成功新增遲到規則：${newRule.label} (${newRule.time})`, 'success');
-      renderActiveTardyRulesList();
-    }
-
-    function deleteTardyRuleEntry(ruleId) {
-      if (!window.appState.classData.tardyRulesList) return;
-      window.appState.classData.tardyRulesList = window.appState.classData.tardyRulesList.filter(r => r.id !== ruleId);
-      if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-      showToast('🗑️ 已刪除該條遲到規則', 'info');
-      renderActiveTardyRulesList();
-    }
-
-    function renderActiveTardyRulesList() {
-      const container = document.getElementById('activeTardyRulesList');
-      const countBadge = document.getElementById('activeRuleCountBadge');
-      const rules = window.appState.classData ? (window.appState.classData.tardyRulesList || []) : [];
-
-      if (countBadge) countBadge.innerText = `${rules.length} 條規則`;
-      if (!container) return;
-
-      if (rules.length === 0) {
-        container.innerHTML = `<p class="text-slate-400 text-center py-3 text-xs">尚無設定任何遲到規則</p>`;
-        return;
-      }
-
-      container.innerHTML = rules.map(r => {
-        const daysBadges = r.days.map(d => `<span class="bg-amber-100 text-amber-800 text-xs px-1 rounded font-semibold">${WEEKDAY_NAMES[d].replace('星期', '週')}</span>`).join(' ');
-        const targetBadge = r.targetGroup === 'ALL' ? '<span class="bg-purple-100 text-purple-700 text-xs px-1.5 py-0.5 rounded font-bold">全班</span>' : `<span class="bg-sky-100 text-sky-700 text-xs px-1.5 py-0.5 rounded font-bold">${r.targetGroup}</span>`;
-
-        return `
-          <div class="bg-white border border-slate-200/80 rounded-xl p-2.5 flex items-center justify-between text-xs shadow-sm hover:border-amber-300 transition-colors">
-            <div class="space-y-1">
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <span class="font-bold text-slate-800">${r.label}</span>
-                ${targetBadge}
-                <span class="font-mono text-amber-700 font-bold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/60">${r.time}</span>
-              </div>
-              <div class="flex items-center gap-1">
-                <span class="text-xs text-slate-400">適用：</span>
-                ${daysBadges}
-              </div>
+            <!-- 字義 -->
+            <div class="col-span-2">
+              <label class="block text-[#5c3d24] font-bold mb-1">字義：</label>
+              <textarea id="input-meaning" rows="2" 
+                class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314] resize-none">巧妙特殊的技藝，或指創新創意的獨特漢字結構。</textarea>
             </div>
-            <button onclick="deleteTardyRuleEntry('${r.id}')" class="text-slate-400 hover:text-rose-600 p-1.5 transition-colors text-sm" title="刪除此規則">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
+
+            <!-- 語詞與解釋 -->
+            <div class="col-span-2">
+              <label class="block text-[#5c3d24] font-bold mb-1">語詞與解釋：</label>
+              <textarea id="input-phrases" rows="2" 
+                class="w-full px-3 py-2 border-2 border-[#b08968] rounded-lg focus:outline-none focus:border-[#5c3d24] bg-white text-[#3d2314] resize-none">【奇藝】獨特而精妙的技藝與造字藝術。
+【工坊】百工聚會創作之所。</textarea>
+            </div>
           </div>
-        `;
-      }).join('');
-    }
+        </section>
+      </main>
 
-    function clearTardyLogs() {
-      if (window.appState.classData) window.appState.classData.tardyLogs = [];
-      if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-      renderTardyLogs();
-      showToast('已清空遲到紀錄', 'info');
-    }
+      <!-- 右側固定 A4 預覽面板 -->
+      <aside class="w-5/12 h-full bg-[#ded2c3] p-8 flex flex-col items-center justify-between border-l-4 border-[#b08968]">
+        
+        <div class="w-full flex items-center justify-between mb-2">
+          <h2 class="text-2xl font-bold text-[#4a3222] flex items-center">
+            <span class="w-8 h-8 rounded-full bg-[#8c6239] text-[#f7f3ed] flex items-center justify-center text-base mr-3">參</span>
+            即時預覽
+          </h2>
+          <span class="text-xs bg-[#c9b5a0] text-[#4a3222] px-2.5 py-1 rounded font-bold">典藏規格</span>
+        </div>
 
-    function renderTardyLogs() {
-      const container = document.getElementById('tardyLogsContainer');
-      const logs = window.appState.classData ? (window.appState.classData.tardyLogs || []) : [];
-      if (!container) return;
-
-      if (logs.length === 0) {
-        container.innerHTML = `<p class="text-slate-400 text-center py-2 text-xs">目前無遲到紀錄</p>`;
-      } else {
-        container.innerHTML = logs.map(l => `
-          <div class="text-xs text-slate-700 border-b border-slate-100 pb-1.5 pt-1 flex justify-between items-center">
+        <!-- 固定 A4 尺寸卡片預覽區 -->
+        <div id="a4-preview-card" class="a4-paper rounded-sm p-8 flex flex-col justify-between border-8 border-[#7f5539]">
+          
+          <!-- A4 頂部頁眉：左上角顯示「奇藝工坊」 -->
+          <div class="border-b-2 border-[#8c6239] pb-3 flex justify-between items-end">
             <div>
-              <span class="font-bold text-slate-800">${l.student}</span>
-              <span class="text-xs text-slate-500 ml-1">(${l.group || '資優班'} · ${l.dayName || ''})</span>
-              <p class="text-xs text-slate-400 truncate max-w-[220px]">${l.ruleDetails || '遲到紀錄'}</p>
+              <div class="text-xs text-[#a57855] tracking-widest uppercase mb-1 leading-none"></div>
+              <div class="text-3xl font-bold text-[#4a3222] tracking-widest leading-none">奇藝工坊</div>
             </div>
             <div class="text-right">
-              <span class="text-amber-700 font-mono font-bold bg-amber-100 px-1.5 py-0.5 rounded">${l.time}</span>
-              <span class="text-xs text-slate-400 block mt-0.5">${l.date}</span>
+              <div class="text-xs text-[#a57855] mb-1 leading-none">奇藝工坊設計師</div>
+              <div id="preview-designer" class="text-lg font-bold text-[#6c4627] border-b border-[#a57855] inline-block px-2 leading-tight">造字大師</div>
             </div>
           </div>
-        `).join('');
-      }
+
+          <!-- A4 中間核心：圖片樣式注音田字格呈現 -->
+          <div class="my-4 flex flex-col items-center justify-center bg-[#fcf8f2] p-5 rounded-lg border border-[#e6ccb2] shadow-inner">
+            <span class="text-xs text-[#a57855] font-bold mb-3 tracking-widest leading-none"></span>
+            
+            <!-- A4 預覽注音田字格 (長寬適應 A4 卡片) -->
+            <div class="zhuyin-tianzige-frame w-[250px] h-[190px] border-3 border-[#7f5539]">
+              <!-- 左側：造字田字格 (190px x 190px) -->
+              <div id="preview-tianzige-container" class="tianzige-square w-[190px] h-[190px] relative">
+                <!-- 背景中央十字虛線 (SVG) -->
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                  <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#b08968" stroke-width="1.5" stroke-dasharray="5,5" />
+                  <line x1="50%" y1="0" x2="50%" y2="100%" stroke="#b08968" stroke-width="1.5" stroke-dasharray="5,5" />
+                </svg>
+                <!-- 繪圖確認後，內容同步複製至此 -->
+              </div>
+
+              <!-- 右側：正統直排注音欄 (60px x 190px) -->
+              <div id="preview-zhuyin-column" class="zhuyin-column w-[60px] h-[190px]">
+                <!-- 預覽注音渲染區 -->
+              </div>
+            </div>
+          </div>
+
+          <!-- A4 下半部：說文解字文字資訊表格 -->
+          <div class="space-y-3 text-[#3d2314]">
+            <!-- 部首、總筆劃、詞性與造字並列 (增加高度、項目名稱靠左置上、同步內容靠右置中並放大字體) -->
+            <div class="grid grid-cols-4 gap-2">
+              <div class="bg-[#f2e9e1] p-2.5 rounded border border-[#d7c4b7] h-[80px] relative flex items-center justify-end">
+                <span class="absolute top-2 left-2 text-xs font-bold text-[#7f5539] leading-none">【部首】</span>
+                <span id="preview-radical" class="text-xl font-bold text-[#4a3222] leading-none truncate text-right">乙部</span>
+              </div>
+              <div class="bg-[#f2e9e1] p-2.5 rounded border border-[#d7c4b7] h-[80px] relative flex items-center justify-end">
+                <span class="absolute top-2 left-2 text-xs font-bold text-[#7f5539] leading-none">【總筆劃】</span>
+                <span id="preview-strokes" class="text-xl font-bold text-[#4a3222] leading-none truncate text-right">12 劃</span>
+              </div>
+              <div class="bg-[#f2e9e1] p-2.5 rounded border border-[#d7c4b7] h-[80px] relative flex items-center justify-end">
+                <span class="absolute top-2 left-2 text-xs font-bold text-[#7f5539] leading-none">【詞性】</span>
+                <span id="preview-pos" class="text-lg font-bold text-[#4a3222] leading-none truncate text-right">形容詞 / 名詞</span>
+              </div>
+              <div class="bg-[#f2e9e1] p-2.5 rounded border border-[#d7c4b7] h-[80px] relative flex items-center justify-end">
+                <span class="absolute top-2 left-2 text-xs font-bold text-[#7f5539] leading-none">【造字】</span>
+                <span id="preview-method" class="text-xl font-bold text-[#4a3222] leading-none truncate text-right">象形</span>
+              </div>
+            </div>
+
+            <!-- 字義 -->
+            <div class="bg-[#f2e9e1] p-2.5 rounded border border-[#d7c4b7]">
+              <div class="font-bold text-[#7f5539] mb-1 text-sm leading-none">【字義】</div>
+              <div id="preview-meaning" class="text-xs leading-relaxed text-[#4a3222] pl-2">
+                巧妙特殊的技藝，或指創新創意的獨特漢字結構。
+              </div>
+            </div>
+
+            <!-- 語詞與解釋 -->
+            <div class="bg-[#f2e9e1] p-2.5 rounded border border-[#d7c4b7]">
+              <div class="font-bold text-[#7f5539] mb-1 text-sm leading-none">【語詞與解釋】</div>
+              <div id="preview-phrases" class="text-xs leading-relaxed text-[#4a3222] pl-2 whitespace-pre-line">
+                【奇藝】獨特而精妙的技藝與造字藝術。
+                【工坊】百工聚會創作之所。
+              </div>
+            </div>
+          </div>
+
+          <!-- A4 底部章印落款區 (已刪除典藏章印字樣，並將紅框奇藝改為咖啡色系) -->
+          <div class="mt-2 pt-2 border-t border-[#8c6239] flex justify-between items-center text-xs text-[#a57855]">
+            <div class="leading-none">奇藝工坊 漢字造字典藏圖譜</div>
+            <div class="flex items-center space-x-2">
+              <div class="w-6 h-6 border-2 border-[#7f5539] text-[#7f5539] font-bold flex items-center justify-center text-[10px] rounded-sm leading-none">
+                奇藝
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 奇藝典藏下載按鈕 -->
+        <button id="btn-download" onclick="downloadPNG()" class="w-full py-3.5 bg-[#8c6239] hover:bg-[#6b4728] text-white rounded-xl font-bold text-xl shadow-lg transition flex items-center justify-center text-center space-x-2 border-2 border-[#e6ccb2]">
+          <i class="fa-solid fa-file-arrow-down text-2xl"></i>
+          <span>奇藝典藏下載 (.PNG)</span>
+        </button>
+
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- 提示訊息框 -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-[#4a3222] text-[#f7f3ed] px-6 py-3 rounded-lg shadow-2xl border-2 border-[#d4a373] flex items-center space-x-3 z-50">
+    <i id="toast-icon" class="fa-solid fa-circle-check text-green-400 text-xl"></i>
+    <span id="toast-msg" class="text-base font-bold">操作成功！</span>
+  </div>
+
+  <script>
+    /* --------------------------------------------------------
+     * 1. 視窗自動等比縮放機制 (Auto Viewport Scaling)
+     * -------------------------------------------------------- */
+    function scaleApp() {
+      const viewport = document.getElementById('app-viewport');
+      const baseWidth = 1920;
+      const baseHeight = 1080;
+
+      const scaleX = window.innerWidth / baseWidth;
+      const scaleY = window.innerHeight / baseHeight;
+      const scale = Math.min(scaleX, scaleY);
+
+      viewport.style.transform = `scale(${scale})`;
     }
 
-    function renderRankingList(completedList, isTeacher) {
-      const targetId = isTeacher ? 'allPresentRankList' : 'studentRankList';
-      const container = document.getElementById(targetId);
-      if (!container) return;
+    window.addEventListener('resize', scaleApp);
+    window.addEventListener('DOMContentLoaded', () => {
+      scaleApp();
+      syncFormToPreview();
+      renderZhuyinStandardLayout(); // 初次渲染標準注音
+      confirmDrawing(); // 初次載入渲染
+    });
 
-      if (!completedList || completedList.length === 0) {
-        container.innerHTML = `<span class="text-xs text-slate-400 italic">尚無小組全組到齊</span>`;
-        return;
-      }
+    /* --------------------------------------------------------
+     * 2. Toast 提示訊息
+     * -------------------------------------------------------- */
+    function showToast(msg, isSuccess = true) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      const toastIcon = document.getElementById('toast-icon');
 
-      const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
-      container.innerHTML = completedList.map((gName, idx) => `
-        <span class="bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-full text-xs font-bold flex items-center gap-1 animate-bounce shrink-0">
-          ${medals[idx] || '🎖️'} ${gName}
-        </span>
-      `).join('');
-    }
-
-    function renderFirstPlaceStats() {
-      const counts = window.appState.classData ? (window.appState.classData.firstPlaceCounts || {}) : {};
-      const groups = window.appState.classData ? (window.appState.classData.groups || []) : [];
-
-      const teacherContainer = document.getElementById('teacherFirstPlaceStats');
-      const studentContainer = document.getElementById('studentFirstPlaceStats');
-
-      if (groups.length === 0) {
-        if (teacherContainer) teacherContainer.innerHTML = '<span class="text-slate-400 italic">尚無數據</span>';
-        if (studentContainer) studentContainer.innerHTML = '<span class="text-slate-400 italic">尚無數據</span>';
-        return;
-      }
-
-      const html = groups.map(g => {
-        const cnt = counts[g.name] || 0;
-        return `<span class="bg-white border border-amber-200 px-2 py-0.5 rounded-lg text-xs font-bold text-slate-700 shadow-xs shrink-0">${g.name}：<span class="text-amber-600 font-mono">${cnt}</span> 次</span>`;
-      }).join('');
-
-      if (teacherContainer) teacherContainer.innerHTML = html;
-      if (studentContainer) studentContainer.innerHTML = html;
-    }
-
-    function saveAttendanceRecord() {
-      if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-      showToast('☁️ 點名紀錄已成功同步儲存！', 'success');
-    }
-
-    function changeTeacherViewDate() {
-      const val = document.getElementById('teacherViewDate').value;
-      window.appState.teacherSelectedDate = val;
-      renderActiveView();
-    }
-
-    function toggleNewClassroomForm() {
-      const form = document.getElementById('classroomForm');
-      form.classList.toggle('hidden');
-    }
-
-    function onClassIdInputChange() {
-      const inputId = document.getElementById('cfgClassId').value.trim().toUpperCase();
-      const descInput = document.getElementById('cfgClassDesc');
-      const studentsInput = document.getElementById('cfgClassStudents');
-      const sheetInput = document.getElementById('cfgSheetUrl');
-
-      if (window.appState.currentView === 'teacher') {
-        const activeTextElem = document.getElementById('activeClassText');
-        if (activeTextElem) {
-          activeTextElem.innerText = `教室：${inputId || window.appState.currentClassId || '-'}`;
-        }
-      }
-
-      if (!inputId) {
-        descInput.value = '';
-        studentsInput.value = '';
-        if (sheetInput) sheetInput.value = '';
-        return;
-      }
-
-      const savedClass = window.appState.savedClassrooms ? window.appState.savedClassrooms[inputId] : null;
-
-      if (savedClass) {
-        descInput.value = savedClass.description || '';
-        if (sheetInput) sheetInput.value = savedClass.sheetUrl || '';
-        if (savedClass.groups && Array.isArray(savedClass.groups)) {
-          studentsInput.value = savedClass.groups.map(g => `${g.name}：${g.students.join('、')}`).join('\n');
-        } else {
-          studentsInput.value = '';
-        }
-        showToast(`已自動載入舊有教室 [${inputId}] 資料供編輯`, 'info');
+      toastMsg.innerText = msg;
+      if (isSuccess) {
+        toastIcon.className = 'fa-solid fa-circle-check text-green-400 text-xl';
       } else {
-        descInput.value = '';
-        studentsInput.value = '';
-        if (sheetInput) sheetInput.value = '';
+        toastIcon.className = 'fa-solid fa-circle-exclamation text-amber-400 text-xl';
       }
+
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
     }
 
-    function saveClassroomConfig() {
-      const cid = document.getElementById('cfgClassId').value.trim().toUpperCase();
-      const desc = document.getElementById('cfgClassDesc').value.trim();
-      const rawStudents = document.getElementById('cfgClassStudents').value.trim();
+    /* --------------------------------------------------------
+     * 3. 繁體正統注音符號直排解析與 HTML 渲染引擎
+     * 規則：聲母在上、韻母在下、聲符（ˊ ˇ ˋ）在右、輕聲聲符（˙）在聲母上方
+     * -------------------------------------------------------- */
+    function parseZhuyinSyllable(syllableStr) {
+      if (!syllableStr) return { lightTone: false, symbols: [], toneMark: '' };
 
-      if (!cid) {
-        showToast('請輸入教室編號', 'error');
+      let str = syllableStr.trim();
+      let lightTone = false;
+      let toneMark = '';
+
+      // 檢查是否包含輕聲符號 (˙ 或 •)
+      if (str.includes('˙') || str.includes('•') || str.startsWith('.')) {
+        lightTone = true;
+        str = str.replace(/[˙•.]/g, '');
+      }
+
+      // 檢查二、三、四聲 (ˊ, ˇ, ˋ)
+      if (str.includes('ˊ')) { toneMark = 'ˊ'; str = str.replace('ˊ', ''); }
+      else if (str.includes('ˇ')) { toneMark = 'ˇ'; str = str.replace('ˇ', ''); }
+      else if (str.includes('ˋ')) { toneMark = 'ˋ'; str = str.replace('ˋ', ''); }
+
+      // 拆解剩餘的聲母、介母、韻母
+      const symbols = str.split('').filter(c => c.trim() !== '');
+
+      return { lightTone, symbols, toneMark };
+    }
+
+    function renderZhuyinStandardLayout() {
+      const inputVal = document.getElementById('input-zhuyin').value || 'ㄑㄧˊ ㄧˋ';
+      const syllables = inputVal.trim().split(/\s+/); // 依空格切分音節
+
+      const editorZhuyinCol = document.getElementById('editor-zhuyin-column');
+      const previewZhuyinCol = document.getElementById('preview-zhuyin-column');
+
+      // 編輯區注音 (較大尺寸)
+      let editorHtml = '';
+      syllables.forEach(syl => {
+        const parsed = parseZhuyinSyllable(syl);
+        editorHtml += `
+          <div class="zhuyin-syllable my-1">
+            <!-- 輕聲聲符置頂 -->
+            <div class="text-[18px] leading-none font-extrabold text-[#5c3d24] h-[14px] flex items-center justify-center">
+              ${parsed.lightTone ? '˙' : ''}
+            </div>
+
+            <div class="relative flex items-center justify-center px-1">
+              <!-- 聲母在上，韻母在下 (垂直直排) -->
+              <div class="flex flex-col items-center justify-center text-2xl font-bold leading-tight text-[#5c3d24]">
+                ${parsed.symbols.map(sym => `<span class="my-[0.5px]">${sym}</span>`).join('')}
+              </div>
+
+              <!-- 聲符在右 (二、三、四聲靠右) -->
+              ${parsed.toneMark ? `
+                <div class="absolute -right-4 top-1/2 -translate-y-1/2 text-xl font-extrabold text-[#5c3d24]">
+                  ${parsed.toneMark}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      // 預覽區注音 (適中卡片尺寸)
+      let previewHtml = '';
+      syllables.forEach(syl => {
+        const parsed = parseZhuyinSyllable(syl);
+        previewHtml += `
+          <div class="zhuyin-syllable my-0.5">
+            <!-- 輕聲聲符置頂 -->
+            <div class="text-[14px] leading-none font-extrabold text-[#5c3d24] h-[10px] flex items-center justify-center">
+              ${parsed.lightTone ? '˙' : ''}
+            </div>
+
+            <div class="relative flex items-center justify-center px-0.5">
+              <!-- 聲母在上，韻母在下 -->
+              <div class="flex flex-col items-center justify-center text-xl font-bold leading-tight text-[#5c3d24]">
+                ${parsed.symbols.map(sym => `<span class="my-[0.5px]">${sym}</span>`).join('')}
+              </div>
+
+              <!-- 聲符在右 -->
+              ${parsed.toneMark ? `
+                <div class="absolute -right-3.5 top-1/2 -translate-y-1/2 text-lg font-extrabold text-[#5c3d24]">
+                  ${parsed.toneMark}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      editorZhuyinCol.innerHTML = editorHtml;
+      previewZhuyinCol.innerHTML = previewHtml;
+    }
+
+    /* --------------------------------------------------------
+     * 4. 編輯拖拽、拉伸縮放與 360 度旋轉邏輯
+     * -------------------------------------------------------- */
+    const editor = document.getElementById('tianzige-editor');
+    let selectedItem = null;
+    let isDragging = false;
+    let isResizing = false;
+    let isRotating = false;
+    let currentResizeHandle = null;
+    let startX, startY, startLeft, startTop, startWidth, startHeight;
+
+    // 新增文字部件
+    document.getElementById('btn-add-char').addEventListener('click', () => {
+      const input = document.getElementById('input-char');
+      const text = input.value.trim();
+      if (!text) {
+        showToast('請輸入要新增的文字部件！', false);
         return;
       }
 
-      const parsedGroups = [];
-      const lines = rawStudents.split('\n');
-      lines.forEach(line => {
-        if (line.includes(':') || line.includes('：')) {
-          const delimiter = line.includes('：') ? '：' : ':';
-          const [gName, stds] = line.split(delimiter);
-          const stdList = stds.split(/[,，、]/).map(s => s.trim()).filter(s => s.length > 0);
-          parsedGroups.push({ name: gName.trim(), students: stdList });
+      createTransformItem(text);
+      input.value = '';
+    });
+
+    function createTransformItem(text) {
+      const item = document.createElement('div');
+      item.className = 'transform-item';
+      item.dataset.rotation = '0';
+      
+      const textSpan = document.createElement('span');
+      textSpan.innerText = text;
+      textSpan.style.fontSize = '80px';
+      item.appendChild(textSpan);
+
+      // 預設大小與位置
+      const defaultSize = 100;
+      item.style.width = defaultSize + 'px';
+      item.style.height = defaultSize + 'px';
+      item.style.left = (editor.clientWidth / 2 - defaultSize / 2) + 'px';
+      item.style.top = (editor.clientHeight / 2 - defaultSize / 2) + 'px';
+
+      // 建立 8 個編輯控制點 (4頂點 + 4邊線中點) + 1個頂部旋轉點
+      const handles = ['nw', 'n', 'ne', 'w', 'e', 'sw', 's', 'se', 'rotate'];
+      handles.forEach(h => {
+        const handle = document.createElement('div');
+        handle.className = `resize-handle handle-${h}`;
+        handle.dataset.handle = h;
+        if (h === 'rotate') {
+          handle.title = '拖拽進行 360 度旋轉';
+        }
+        item.appendChild(handle);
+      });
+
+      // 綁定事件
+      item.addEventListener('mousedown', onItemMouseDown);
+
+      editor.appendChild(item);
+      selectItem(item);
+      showToast(`已新增部件：「${text}」`);
+    }
+
+    // 選取物件
+    function selectItem(item) {
+      if (selectedItem) {
+        selectedItem.classList.remove('selected');
+      }
+      selectedItem = item;
+      if (selectedItem) {
+        selectedItem.classList.add('selected');
+      }
+    }
+
+    // 點擊編輯器空白處取消選取
+    editor.addEventListener('mousedown', (e) => {
+      if (e.target === editor || e.target.tagName.toLowerCase() === 'svg') {
+        selectItem(null);
+      }
+    });
+
+    // 刪除選取物件
+    document.getElementById('btn-delete-selected').addEventListener('click', () => {
+      if (selectedItem) {
+        editor.removeChild(selectedItem);
+        selectedItem = null;
+        showToast('已刪除選取的物件');
+      } else {
+        showToast('請先選取要刪除的文字部件', false);
+      }
+    });
+
+    /* --- 滑鼠拖曳、縮放與 360 度旋轉事件處理 --- */
+    function onItemMouseDown(e) {
+      e.stopPropagation();
+      selectItem(this);
+
+      const handle = e.target.closest('.resize-handle');
+      if (handle) {
+        if (handle.dataset.handle === 'rotate') {
+          isRotating = true;
+        } else {
+          isResizing = true;
+          currentResizeHandle = handle.dataset.handle;
+        }
+      } else {
+        isDragging = true;
+      }
+
+      startX = e.clientX;
+      startY = e.clientY;
+      startLeft = parseInt(this.style.left) || 0;
+      startTop = parseInt(this.style.top) || 0;
+      startWidth = parseInt(this.style.width) || 100;
+      startHeight = parseInt(this.style.height) || 100;
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    }
+
+    function onMouseMove(e) {
+      if (!selectedItem) return;
+
+      const viewport = document.getElementById('app-viewport');
+      const matrix = window.getComputedStyle(viewport).transform;
+      let scale = 1;
+      if (matrix && matrix !== 'none') {
+        const values = matrix.split('(')[1].split(')')[0].split(',');
+        scale = parseFloat(values[0]);
+      }
+
+      const dx = (e.clientX - startX) / scale;
+      const dy = (e.clientY - startY) / scale;
+
+      if (isRotating) {
+        const rect = selectedItem.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const radians = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+        let degrees = radians * (180 / Math.PI) + 90;
+        selectedItem.dataset.rotation = degrees;
+        selectedItem.style.transform = `rotate(${degrees}deg)`;
+      } else if (isDragging) {
+        let newLeft = startLeft + dx;
+        let newTop = startTop + dy;
+        
+        selectedItem.style.left = newLeft + 'px';
+        selectedItem.style.top = newTop + 'px';
+      } else if (isResizing) {
+        let newW = startWidth;
+        let newH = startHeight;
+        let newL = startLeft;
+        let newT = startTop;
+
+        const handle = currentResizeHandle;
+        const aspect = startWidth / startHeight;
+
+        // 頂點控制點：保持長寬比等比例縮放
+        if (['nw', 'ne', 'sw', 'se'].includes(handle)) {
+          if (handle === 'se') {
+            newW = Math.max(25, startWidth + dx);
+            newH = newW / aspect;
+          } else if (handle === 'sw') {
+            newW = Math.max(25, startWidth - dx);
+            newL = startLeft + (startWidth - newW);
+            newH = newW / aspect;
+          } else if (handle === 'ne') {
+            newW = Math.max(25, startWidth + dx);
+            newH = newW / aspect;
+            newT = startTop + (startHeight - newH);
+          } else if (handle === 'nw') {
+            newW = Math.max(25, startWidth - dx);
+            newL = startLeft + (startWidth - newW);
+            newH = newW / aspect;
+            newT = startTop + (startHeight - newH);
+          }
+        } 
+        // 邊線控制點：單向拉伸與擠壓 (左右或上下)
+        else {
+          if (handle === 'e') {
+            newW = Math.max(20, startWidth + dx);
+          } else if (handle === 'w') {
+            newW = Math.max(20, startWidth - dx);
+            newL = startLeft + (startWidth - newW);
+          } else if (handle === 's') {
+            newH = Math.max(20, startHeight + dy);
+          } else if (handle === 'n') {
+            newH = Math.max(20, startHeight - dy);
+            newT = startTop + (startHeight - newH);
+          }
+        }
+
+        selectedItem.style.width = newW + 'px';
+        selectedItem.style.height = newH + 'px';
+        selectedItem.style.left = newL + 'px';
+        selectedItem.style.top = newT + 'px';
+
+        // 動態調整文字 Transform 縮放與拉伸比例 (基於 100px 標準尺寸)
+        const textSpan = selectedItem.querySelector('span');
+        if (textSpan) {
+          const scaleX = newW / 100;
+          const scaleY = newH / 100;
+          textSpan.style.transform = `scale(${scaleX}, ${scaleY})`;
+        }
+      }
+    }
+
+    function onMouseUp() {
+      isDragging = false;
+      isResizing = false;
+      isRotating = false;
+      currentResizeHandle = null;
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    /* --------------------------------------------------------
+     * 5. 繪圖確認：將編輯區備份複製至右側 A4 預覽格
+     * -------------------------------------------------------- */
+    function confirmDrawing() {
+      const previewContainer = document.getElementById('preview-tianzige-container');
+      
+      // 清理舊部件 (保留背景 SVG 十字線)
+      const oldClones = previewContainer.querySelectorAll('.transform-item');
+      oldClones.forEach(el => el.remove());
+
+      // 複製所有部件並按比例縮放 (編輯區 280px -> 預覽區 190px)
+      const items = editor.querySelectorAll('.transform-item');
+      items.forEach(item => {
+        const clone = item.cloneNode(true);
+        clone.classList.remove('selected');
+        
+        const handles = clone.querySelectorAll('.resize-handle');
+        handles.forEach(h => h.remove());
+
+        const ratio = 190 / 280;
+        
+        const origLeft = parseFloat(item.style.left) || 0;
+        const origTop = parseFloat(item.style.top) || 0;
+        const origW = parseFloat(item.style.width) || 100;
+        const origH = parseFloat(item.style.height) || 100;
+        const origRot = item.dataset.rotation || 0;
+
+        clone.style.left = (origLeft * ratio) + 'px';
+        clone.style.top = (origTop * ratio) + 'px';
+        clone.style.width = (origW * ratio) + 'px';
+        clone.style.height = (origH * ratio) + 'px';
+        clone.style.transform = `rotate(${origRot}deg)`;
+        clone.style.cursor = 'default';
+
+        const cloneSpan = clone.querySelector('span');
+        if (cloneSpan) {
+          const scaleX = (origW / 100) * ratio;
+          const scaleY = (origH / 100) * ratio;
+          cloneSpan.style.transform = `scale(${scaleX}, ${scaleY})`;
+        }
+
+        previewContainer.appendChild(clone);
+      });
+
+      showToast('造字結構已順利同步至右側即時預覽！');
+    }
+
+    /* --------------------------------------------------------
+     * 6. 表單輸入同步至右側 A4 預覽區
+     * -------------------------------------------------------- */
+    const formFields = [
+      { input: 'input-designer', preview: 'preview-designer' },
+      { input: 'input-radical', preview: 'preview-radical' },
+      { input: 'input-method', preview: 'preview-method' },
+      { input: 'input-pos', preview: 'preview-pos' },
+      { input: 'input-meaning', preview: 'preview-meaning' },
+      { input: 'input-phrases', preview: 'preview-phrases' }
+    ];
+
+    function syncFormToPreview() {
+      formFields.forEach(field => {
+        const inputEl = document.getElementById(field.input);
+        const previewEl = document.getElementById(field.preview);
+        
+        if (inputEl && previewEl) {
+          previewEl.innerText = inputEl.value;
+          inputEl.addEventListener('change', () => { previewEl.innerText = inputEl.value; });
+          inputEl.addEventListener('input', () => { previewEl.innerText = inputEl.value; });
         }
       });
 
-      if (parsedGroups.length === 0 && rawStudents.length > 0) {
-        const stdList = rawStudents.split(/[,，、]/).map(s => s.trim()).filter(s => s.length > 0);
-        parsedGroups.push({ name: '第一組', students: stdList });
-      }
+      // 注音符號輸入動態事件
+      const zhuyinInput = document.getElementById('input-zhuyin');
+      zhuyinInput.addEventListener('input', renderZhuyinStandardLayout);
 
-      window.appState.currentClassId = cid;
+      // 筆劃特殊處理
+      const strokeInput = document.getElementById('input-strokes');
+      const strokePreview = document.getElementById('preview-strokes');
+      strokeInput.addEventListener('input', () => {
+        strokePreview.innerText = (strokeInput.value || 0) + ' 劃';
+      });
+    }
+
+    /* --------------------------------------------------------
+     * 7. 奇藝典藏下載 (.PNG 圖片)
+     * -------------------------------------------------------- */
+    function downloadPNG() {
+      showToast('正在生成高畫質 A4 典藏圖檔，請稍候...');
       
-      const existingData = window.appState.savedClassrooms ? (window.appState.savedClassrooms[cid] || {}) : {};
+      const originalCard = document.getElementById('a4-preview-card');
 
-      const newClassData = {
-        classId: cid,
-        description: desc,
-        sheetUrl: existingData.sheetUrl || '',
-        firstPlaceCounts: existingData.firstPlaceCounts || {},
-        firstPlaceHistory: existingData.firstPlaceHistory || {},
-        tardyRulesList: existingData.tardyRulesList || [],
-        tardyLogs: existingData.tardyLogs || [],
-        groups: parsedGroups,
-        announcements: existingData.announcements || {},
-        leaves: existingData.leaves || [],
-        attendance: existingData.attendance || {},
-        completedGroups: existingData.completedGroups || {}
-      };
+      if (selectedItem) selectedItem.classList.remove('selected');
 
-      window.appState.classData = newClassData;
-      if (!window.appState.savedClassrooms) window.appState.savedClassrooms = {};
-      window.appState.savedClassrooms[cid] = newClassData;
+      // 1. 建立不受 viewport transform scale 影響的獨立臨時容器
+      const tempContainer = document.createElement('div');
+      tempContainer.style.position = 'fixed';
+      tempContainer.style.left = '-9999px';
+      tempContainer.style.top = '0px';
+      tempContainer.style.width = '580px';
+      tempContainer.style.height = '820px';
+      tempContainer.style.transform = 'none';
+      tempContainer.style.zIndex = '-9999';
 
-      if (window.setupClassroomRealtimeSync) {
-        window.setupClassroomRealtimeSync(cid);
-      }
+      // 2. 複製 A4 預覽卡片節點
+      const cloneCard = originalCard.cloneNode(true);
+      cloneCard.style.transform = 'none';
+      tempContainer.appendChild(cloneCard);
+      document.body.appendChild(tempContainer);
 
-      if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-      showToast(`✅ 教室 ${cid} 設定已成功儲存！`, 'success');
-      renderActiveView();
-    }
-
-    function renderClassroomList() {
-      const container = document.getElementById('classroomListContainer');
-      if (!container) return;
-
-      const savedMap = window.appState.savedClassrooms || {};
-      const keys = Object.keys(savedMap);
-
-      if (keys.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-400 p-3 text-center">目前尚無已建立的教室資料</p>`;
-        return;
-      }
-
-      container.innerHTML = keys.map(k => {
-        const item = savedMap[k];
-        const isCurrent = k === window.appState.currentClassId;
-        return `
-          <div onclick="switchClassroom('${k}')" class="p-2.5 rounded-xl ${isCurrent ? 'bg-purple-100 border-purple-300 font-bold ring-1 ring-purple-400' : 'bg-purple-50/70 hover:bg-purple-100 border-purple-200'} border text-xs text-purple-800 cursor-pointer flex items-center justify-between transition-colors shadow-sm group">
-            <div class="flex items-center gap-2 truncate">
-              <span class="font-bold font-mono text-sm">${k}</span>
-              <span class="text-xs text-purple-600 truncate max-w-[100px]">${item.description || '無備註'}</span>
-            </div>
-            <button onclick="deleteClassroom('${k}', event)" class="text-slate-400 hover:text-rose-600 hover:bg-rose-100 p-1.5 rounded-lg transition-colors text-xs shrink-0" title="刪除教室 [${k}] 所有資料">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function deleteClassroom(cid, event) {
-      if (event) event.stopPropagation();
-
-      if (!confirm(`⚠️ 確定要刪除教室【${cid}】的所有資料嗎？`)) return;
-
-      if (window.appState.savedClassrooms) {
-        delete window.appState.savedClassrooms[cid];
-      }
-
-      if (window.appState.currentClassId === cid) {
-        window.appState.currentClassId = '';
-        window.appState.classData = {
-          classId: '',
-          description: '',
-          sheetUrl: '',
-          firstPlaceCounts: {},
-          firstPlaceHistory: {},
-          tardyRulesList: [],
-          tardyLogs: [],
-          groups: [],
-          announcements: {},
-          leaves: [],
-          attendance: {},
-          completedGroups: {}
-        };
-      }
-
-      if (window.saveClassroomToFirestore) window.saveClassroomToFirestore();
-      showToast(`🗑️ 已刪除教室【${cid}】`, 'info');
-      renderActiveView();
-    }
-
-    function switchClassroom(cid) {
-      if (window.appState.savedClassrooms && window.appState.savedClassrooms[cid]) {
-        window.appState.currentClassId = cid;
-        window.appState.classData = window.appState.savedClassrooms[cid];
+      // 3. 於標準無縮放環境下執行 html2canvas 高解析度繪製
+      html2canvas(cloneCard, {
+        scale: 3,
+        useCORS: true,
+        backgroundColor: '#fffdf9',
+        width: 580,
+        height: 820,
+        scrollX: 0,
+        scrollY: 0,
+        logging: false
+      }).then(canvas => {
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        const designer = document.getElementById('input-designer').value || '造字大師';
         
-        if (window.setupClassroomRealtimeSync) {
-          window.setupClassroomRealtimeSync(cid);
-        }
+        link.href = image;
+        link.download = `奇藝工坊_造字典藏_${designer}.png`;
+        link.click();
 
-        showToast(`已切換至教室【${cid}】`, 'success');
-        renderActiveView();
-      }
+        showToast('下載成功！已保存為高畫質 PNG 圖片檔案');
+      }).catch(err => {
+        console.error(err);
+        showToast('匯出失敗，請重試！', false);
+      }).finally(() => {
+        // 4. 清理臨時 DOM 節點
+        if (document.body.contains(tempContainer)) {
+          document.body.removeChild(tempContainer);
+        }
+      });
     }
   </script>
 </body>
